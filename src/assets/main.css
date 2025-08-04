@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+* {
+    font-family: "Montserrat", serif;
+}
+
+button, a{
+    cursor: pointer;
+}
