@@ -20,7 +20,7 @@ export const useAuthStore = defineStore(
             email: localStorage.getItem('email') || '',
             username: localStorage.getItem('username') || '',
             isLoading: false,
-            dataUsers: [] as DataUsers[]
+            dataUsers: [] as DataUsers[],
         }),
 
         actions: {

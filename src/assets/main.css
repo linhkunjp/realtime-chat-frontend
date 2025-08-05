@@ -4,6 +4,22 @@
     font-family: "Montserrat", serif;
 }
 
+#app{
+    background-color: #fff;
+}
+
 button, a{
     cursor: pointer;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding-left: calc(100% - 140px);
+    padding-right: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: white !important;
+    }
 }
