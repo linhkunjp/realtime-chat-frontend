@@ -9,31 +9,35 @@
     <div
       class="w-full 2xl:max-w-1/3 xl:max-w-5/12 lg:max-w-1/2 sm:flex items-center justify-center mx-6"
     >
-      <div class="">
+      <div>
         <p class="text-2xl font-bold mb-5 sm:mr-[80px] text-black">Welcome to Realtime Chat</p>
-
+        <button @click="handleLogout" class="text-xl text-black px-5 py-4">Sign out</button>
         <!-- Form -->
-        <AuthLogin v-if="authStore.component == 'login'" />
-        <AuthRegister v-if="authStore.component == 'register'" />
+        <SignIn v-if="authStore.component == 'login'" />
+        <SignUp v-if="authStore.component == 'register'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useDevice } from '@/utils/deviceMixin'
-import AuthLogin from '@/components/auth/AuthLogin.vue'
-import AuthRegister from '@/components/auth/AuthRegister.vue'
+import SignUp from '@/components/auth/SignUp.vue'
+import SignIn from '@/components/auth/SignIn.vue'
+import { useClerk } from '@clerk/vue'
 
-const { isMobile, isTablet, isDesktop } = useDevice()
+const { isDesktop } = useDevice()
 const authStore = useAuthStore()
-const email = ref('')
-const password = ref('')
+const clerk = useClerk()
 
-const submit = async () => {
-  const submitData = { email: email.value, password: password.value }
-  // await authStore.handleLogin(submitData as { email: string; password: string })
+const handleLogout = async () => {
+  await clerk.value?.signOut()
+  localStorage.removeItem('token')
+  localStorage.removeItem('user_id')
+  localStorage.removeItem('email')
+  localStorage.removeItem('username')
+  localStorage.removeItem('image')
+  window.location.href = '/'
 }
 </script>

@@ -23,8 +23,8 @@
       <div
         v-for="(item, index) in chatStore.listChats"
         :key="index"
-        @click="getConversation(item.username, item._id)"
-        :class="{ 'bg-[#ebf0ff]': chatStore.otherId == item._id }"
+        @click="getConversation(item.username, item.userId)"
+        :class="{ 'bg-[#ebf0ff]': chatStore.otherId == item.userId }"
         class="hover:bg-[#f6f6f6] cursor-pointer"
       >
         <Profile :name="item.username" :lastMessage="item.lastMessage" :isMessage="true" />

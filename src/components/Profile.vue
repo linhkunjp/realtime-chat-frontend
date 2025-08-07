@@ -9,9 +9,16 @@
       <!-- <img v-if="isMobile" src="@/assets/imgs/ic-arrow-left.svg" /> -->
     </button>
     <div
+      v-if="!image"
       :class="isMessage ? 'w-[50px] h-[50px]' : 'w-[54px] h-[54px]'"
       class="rounded-full bg-[green]"
     ></div>
+    <img
+      v-else
+      :src="image"
+      :class="isMessage ? 'w-[50px] h-[50px]' : 'w-[54px] h-[54px]'"
+      class="rounded-full bg-[green]"
+    />
     <div>
       <p class="text-sm font-semibold">{{ name }}</p>
       <p v-if="isUser" class="text-xs">{{ career }}</p>

@@ -9,7 +9,6 @@ interface MessageData {
 }
 
 interface ListChatData {
-    _id: string,
     userId: string,
     username: string,
     email: string,
@@ -23,6 +22,7 @@ export const useChatStore = defineStore(
         state: () => ({
             messages: [] as MessageData[],
             userName: localStorage.getItem('username') || '',
+            image: localStorage.getItem('image') || '',
             isShowLeftComp: false,
             userId: localStorage.getItem('user_id') || '',
             otherId: '',
@@ -47,7 +47,7 @@ export const useChatStore = defineStore(
                 if (response && response.isSuccess == true) {
                     this.listChats = response.results
                     if (this.listChats.length > 0) {
-                        this.otherId = this.listChats[0]._id
+                        this.otherId = this.listChats[0].userId
 
                         // Lấy chi tiết tin nhắn của user đầu tiên để hiển thị
                         await this.getChatDetail(this.otherId, this.userId)

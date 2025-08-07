@@ -1,6 +1,6 @@
 export interface AuthData {
     email: string;
-    password: string;
-    username?: string;
-    guestId?: string | null;
+    username: string;
+    image: string;
+    userId: string
 }

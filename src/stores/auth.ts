@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
 import AuthService from '@/services/AuthService'
 import type { AuthData } from '@/types/auth'
-import { useChatStore } from '@/stores/chatStore'
 
 interface DataUsers {
-    _id: string,
+    userId: string,
     email: string,
     username: string
 }
@@ -19,43 +18,29 @@ export const useAuthStore = defineStore(
             token: localStorage.getItem('token'),
             email: localStorage.getItem('email') || '',
             username: localStorage.getItem('username') || '',
+            image: localStorage.getItem('image') || '',
             isLoading: false,
             dataUsers: [] as DataUsers[],
         }),
 
         actions: {
-            async handleLogin(data: AuthData) {
+            async handleAuth(data: AuthData, token: string) {
                 const submitData = {
                     email: data.email,
-                    password: data.password,
-                    guestId: data.guestId || ''
-                };
-
-                this.isLoading = true
-                const response = await AuthService.login(submitData)
-                if (response.isSuccess == true) {
-                    localStorage.setItem('token', response.token)
-                    localStorage.setItem('user_id', response.user_id)
-                    localStorage.setItem('email', response.email)
-                    localStorage.setItem('username', response.username)
-                }
-                this.isLoading = false
-                return response
-            },
-
-            async handleRegister(data: AuthData) {
-                const submitData = {
-                    email: data.email,
-                    password: data.password,
                     username: data.username,
-                    guestId: data.guestId || ''
+                    image: data.image,
+                    userId: data.userId,
                 };
 
                 this.isLoading = true
-                const response = await AuthService.register(submitData)
-                if (response.isSuccess == true) {
-                    localStorage.setItem('token', response.token)
-                    localStorage.setItem('user_id', response.user_id)
+                const response = await AuthService.saveUserToMongo(submitData, token)
+                if (response && response.isSuccess == true) {
+                    console.log(response.results)
+                    const results = response.results
+                    localStorage.setItem('user_id', results.userId)
+                    localStorage.setItem('email', results.email)
+                    localStorage.setItem('username', results.username)
+                    localStorage.setItem('image', results.image)
                 }
                 this.isLoading = false
                 return response

@@ -2,7 +2,8 @@
   <div class="h-ful flex flex-col">
     <!-- Header -->
     <div class="border-b border-[#dfe5ef]">
-      <Profile :name="userName" :isOther="true" />
+      <Profile :name="userName" :isOther="true" :image="chatStore.image" />
+      <button @click="handleLogout" class="text-xl text-black px-5 py-4">Sign out</button>
     </div>
 
     <!-- Content -->
@@ -54,20 +55,27 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
 import Profile from '../Profile.vue'
-
-interface MessageData {
-  user: string
-  text: string
-}
+import { useClerk } from '@clerk/vue'
 
 const chatStore = useChatStore()
 const userName = computed(() => chatStore.userName)
 const userId = ref(chatStore.userId)
+const clerk = useClerk()
 
 const newMessage = ref('')
 const heightMain = ref<HTMLDivElement | null>(null)
 const textarea = ref<HTMLDivElement | null>(null)
 const inputContainer = ref<HTMLDivElement | null>(null)
+
+const handleLogout = async () => {
+  await clerk.value?.signOut()
+  localStorage.removeItem('token')
+  localStorage.removeItem('user_id')
+  localStorage.removeItem('email')
+  localStorage.removeItem('username')
+  localStorage.removeItem('image')
+  window.location.href = '/'
+}
 
 // Cuộn xuống dưới cùng màn chat
 const scrollToBottom = () => {
