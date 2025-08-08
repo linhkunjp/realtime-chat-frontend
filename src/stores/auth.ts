@@ -35,12 +35,12 @@ export const useAuthStore = defineStore(
                 this.isLoading = true
                 const response = await AuthService.saveUserToMongo(submitData, token)
                 if (response && response.isSuccess == true) {
-                    console.log(response.results)
                     const results = response.results
                     localStorage.setItem('user_id', results.userId)
                     localStorage.setItem('email', results.email)
                     localStorage.setItem('username', results.username)
                     localStorage.setItem('image', results.image)
+                    localStorage.setItem('token', token)
                 }
                 this.isLoading = false
                 return response

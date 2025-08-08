@@ -16,6 +16,10 @@ const routes = [
           path: "/auth",
           component: () => import("@/views/pages/AuthPage.vue"),
         },
+        {
+          path: "/auth/sso-callback",
+          component: () => import("@/views/pages/SSOCallBack.vue"),
+        },
       ]
   },
 ]

@@ -2,6 +2,7 @@
   <!-- Oauth -->
   <div>
     <button
+      @click="signInGoogle"
       class="outline-none px-7 py-3 !border !border-[#e5eaef] rounded-lg min-h-[48px] w-full text-sm whitespace-nowrap flex items-center justify-center gap-3 hover:bg-[#f6f6f6] text-black"
     >
       <img class="w-5" src="@/assets/imgs/ic-google.svg" /> {{ text }} với Google
@@ -17,9 +18,21 @@
 </template>
 
 <script setup lang="ts">
+import { useSignIn } from '@clerk/vue'
+
 defineProps({
   text: String,
 })
+
+const { signIn } = useSignIn()
+
+const signInGoogle = async () => {
+  await signIn.value?.authenticateWithRedirect({
+    strategy: 'oauth_google',
+    redirectUrl: '/auth/sso-callback',
+    redirectUrlComplete: '/auth/sso-callback',
+  })
+}
 </script>
 
 <style lang="css">

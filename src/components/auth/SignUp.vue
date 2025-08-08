@@ -106,7 +106,6 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error)
       authStore.isLoading = false
       const customError = (error as any).errors[0]
       const code = customError.code
