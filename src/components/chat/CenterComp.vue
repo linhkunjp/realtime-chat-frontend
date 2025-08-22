@@ -48,11 +48,14 @@
                 :class="[item.senderId == userId ? 'left-[-36px]' : 'right-[-36px]']"
                 class="absolute top-0 bottom-0 flex items-center"
               >
-                <div class="relative hidden group-hover:flex items-center group/icon p-2.5">
-                  <i class="fa-regular fa-face-smile cursor-pointer"></i>
+                <div
+                  class="relative hidden group-hover:flex items-center group/icon p-2.5 cursor-pointer"
+                >
+                  <i class="fa-regular fa-face-smile"></i>
 
                   <div
-                    class="absolute top-[-52px] left-1/2 -translate-x-1/2 hidden group-hover/icon:flex bg-white shadow-lg rounded-3xl px-3.5 py-2.5 gap-3 w-max z-9"
+                    :class="index == 0 ? 'top-[36px]' : 'top-[-52px]'"
+                    class="absolute left-1/2 -translate-x-1/2 hidden group-hover/icon:flex bg-white shadow-lg rounded-3xl px-3.5 py-2.5 gap-3 w-max z-9 cursor-default"
                   >
                     <button
                       v-for="(i, index) in reactions"
@@ -66,7 +69,8 @@
                     </button>
 
                     <div
-                      class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-white"
+                      :class="index == 0 ? 'top-[-4px]' : '-bottom-1'"
+                      class="absolute left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-white cursor-default"
                     ></div>
                   </div>
                 </div>
@@ -127,7 +131,7 @@ const chatStore = useChatStore()
 const userName = computed(() => chatStore.userName)
 const userId = ref(chatStore.userId)
 const clerk = useClerk()
-const isShowTime = ref(0)
+const isShowTime = ref(-1)
 const reactions = ref([
   { type: 'like', icon: icLike },
   { type: 'love', icon: icLove },

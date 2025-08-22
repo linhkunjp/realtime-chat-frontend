@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import socket from "@/utils/socket";
 import ChatService from '@/services/ChatService'
-import type { MessageData, ListChatData } from '@/types/message'
+import type { Reaction, MessageData, ListChatData } from '@/types/message'
 
 export const useChatStore = defineStore(
     'chat',
@@ -105,6 +105,12 @@ export const useChatStore = defineStore(
                     createdAt: new Date().toISOString()
                 };
                 this.messages.push(msg);
+                // Cập nhật cache
+                const cached = this.messagesCache.get(receiverId) || [];
+                cached.push(msg);
+                this.messagesCache.set(receiverId, cached);
+
+                // Emit cho server
                 socket.emit('sendMessage', msg);
             },
 
