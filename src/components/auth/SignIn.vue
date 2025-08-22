@@ -35,8 +35,8 @@ import { Form } from 'vee-validate'
 import { SignInSchema } from '@/schemas/SignInSchema'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'primevue'
-import { useSignIn } from '@clerk/vue'
-import { useUser } from '@clerk/vue'
+import { useSignIn, useUser } from '@clerk/vue'
+import type { ClerkError } from '@/types/clerk'
 
 import AuthInput from '@/components/auth/AuthInput.vue'
 import AuthGoogle from '@/components/auth/AuthGoogle.vue'
@@ -62,8 +62,7 @@ const handleSubmit = async () => {
   if (authStore.isLoading == true) {
     return
   }
-  // const submitData = { ...formData }
-  // console.log('submitData: ', submitData)
+
   authStore.isLoading = true
   try {
     const results = await signIn.value?.create({
@@ -94,7 +93,7 @@ const handleSubmit = async () => {
   } catch (error) {
     if (error instanceof Error) {
       authStore.isLoading = false
-      const customError = (error as any).errors[0]
+      const customError = (error as ClerkError).errors?.[0]
       const code = customError.code
       let message = ''
       if (code && code == 'form_identifier_not_found') {

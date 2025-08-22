@@ -1,16 +1,19 @@
 <template>
   <div
     :style="{ background: bgColor }"
-    class="flex items-center justify-center absolute inset-0 bg-white z-10"
+    class="flex items-center justify-center flex-col absolute inset-0 bg-white z-10"
   >
     <div
       :class="{ '!w-[60px] !h-[60px] !border-[8px]': isMobile }"
       class="loader w-[100px] h-[100px] rounded-full border-[12px] border-[#f3f3f3] !border-t-[#3498db]"
     ></div>
+
+    <p v-if="authStore.isVerify" class="text-2xl text-black mt-5">Verifying</p>
   </div>
 </template>
 <script setup lang="ts">
 import { useDevice } from '@/utils/deviceMixin'
+import { useAuthStore } from '@/stores/auth'
 
 defineProps({
   text: String,
@@ -20,7 +23,8 @@ defineProps({
   },
 })
 
-const { isMobile, isTablet, isDesktop } = useDevice()
+const { isMobile } = useDevice()
+const authStore = useAuthStore()
 </script>
 
 <style scoped>

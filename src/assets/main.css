@@ -18,6 +18,13 @@ input[type='date']::-webkit-calendar-picker-indicator {
     padding-right: 0;
 }
 
+i.fa,
+i.fa-solid,
+i.fa-user,
+i.fa-regular {
+    font-family: 'Fontawesome' !important;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: white !important;

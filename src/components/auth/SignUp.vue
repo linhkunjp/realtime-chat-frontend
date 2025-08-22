@@ -33,14 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { Form } from 'vee-validate'
 import { SignUpSchema } from '@/schemas/SignUpSchema'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'primevue'
-import { useSignUp } from '@clerk/vue'
-import { useUser } from '@clerk/vue'
-import { useAuth } from '@clerk/vue'
+import { useSignUp, useUser, useAuth } from '@clerk/vue'
+import type { ClerkError } from '@/types/clerk'
 
 import AuthInput from '@/components/auth/AuthInput.vue'
 import AuthGoogle from '@/components/auth/AuthGoogle.vue'
@@ -107,7 +106,7 @@ const handleSubmit = async () => {
   } catch (error) {
     if (error instanceof Error) {
       authStore.isLoading = false
-      const customError = (error as any).errors[0]
+      const customError = (error as ClerkError).errors?.[0]
       const code = customError.code
       const meta = customError.meta?.paramName
       let message = ''

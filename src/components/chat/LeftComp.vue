@@ -1,7 +1,12 @@
 <template>
   <div class="h-full">
     <!-- Infor -->
-    <Profile :name="authStore.username" :career="'Designer'" :isUser="true" />
+    <ProfileComp
+      :name="authStore.username"
+      :email="authStore.email"
+      :image="authStore.image"
+      :isUser="true"
+    />
 
     <!-- Search -->
     <div class="border border-[#dfe5ef] rounded-lg h-[42px] flex items-center py-6 mt-4 mb-6 mx-6">
@@ -23,31 +28,37 @@
       <div
         v-for="(item, index) in chatStore.listChats"
         :key="index"
-        @click="getConversation(item.username, item.userId)"
+        @click="getConversation(item.username, item.userId, item.image)"
         :class="{ 'bg-[#ebf0ff]': chatStore.otherId == item.userId }"
         class="hover:bg-[#f6f6f6] cursor-pointer"
       >
-        <Profile :name="item.username" :lastMessage="item.lastMessage" :isMessage="true" />
+        <ProfileComp
+          :name="item.username"
+          :lastMessage="item.lastMessage"
+          :image="item.image"
+          :isMessage="true"
+          :id="item.userId"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/auth'
-import Profile from '../Profile.vue'
+import ProfileComp from '../ProfileComp.vue'
 
-const { isMobile, isTablet, isDesktop } = useDevice()
+const { isTablet } = useDevice()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 
-const getConversation = async (dataName: string, otherId: string) => {
+const getConversation = async (dataName: string, otherId: string, image: string) => {
   // Gán tên, id của người cần chat
   chatStore.userName = dataName
   chatStore.otherId = otherId
+  chatStore.image = image
 
   if (isTablet) {
     chatStore.showMenu(false)
@@ -58,7 +69,7 @@ const getConversation = async (dataName: string, otherId: string) => {
     chatStore.messages = chatStore.messagesCache.get(otherId)!
   } else {
     await chatStore.getChatDetail(otherId, chatStore.userId)
-    chatStore.messagesCache.set(otherId, chatStore.messages)
+    chatStore.messagesCache.set(otherId, [...chatStore.messages])
   }
 }
 </script>

@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <span class="text-black text-2xl mx-6 my-8">Verifying....</span>
-  </div>
+  <div></div>
 </template>
 
 <script setup lang="ts">
@@ -17,13 +15,13 @@ interface UserData {
   image: string
 }
 
-const { user } = useUser()
 const toast = useToast()
+const authStore = useAuthStore()
+const clerk = useClerk()
+const { user } = useUser()
 const { setActive } = useSignIn()
 const { signUp } = useSignUp()
-const clerk = useClerk()
 const { getToken } = useAuth()
-const authStore = useAuthStore()
 
 const handleSuccess = (userData: UserData, token: string) => {
   localStorage.setItem('user_id', userData.userId ?? '')
@@ -43,7 +41,9 @@ const handleRedirect = () => {
     life: 3000,
   })
 
-  setTimeout(() => (window.location.href = '/'), 200)
+  setTimeout(() => {
+    window.location.href = '/'
+  }, 200)
 }
 
 watchEffect(async () => {
@@ -51,8 +51,8 @@ watchEffect(async () => {
   if (clerk.value?.client?.signIn) {
     const signIn = clerk.value?.client?.signIn
     const token = await getToken.value()
-    console.log('signIn: ', signIn)
-    console.log('token: ', token)
+    // console.log('signIn: ', signIn)
+    // console.log('token: ', token)
 
     // Nếu đã có tài khoản
     if (token) {
@@ -60,7 +60,7 @@ watchEffect(async () => {
         {
           userId: user.value?.id ?? '',
           email: user.value?.emailAddresses[0]?.emailAddress ?? '',
-          username: user.value?.username ?? '',
+          username: user.value?.fullName ?? '',
           image: user.value?.imageUrl ?? '',
         },
         token,
@@ -75,7 +75,7 @@ watchEffect(async () => {
         transfer: true,
       })
 
-      console.log(res)
+      // console.log(res)
       if (res?.status === 'complete') {
         await setActive.value?.({
           session: res.createdSessionId,

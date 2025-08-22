@@ -19,8 +19,9 @@ export const useAuthStore = defineStore(
             email: localStorage.getItem('email') || '',
             username: localStorage.getItem('username') || '',
             image: localStorage.getItem('image') || '',
-            isLoading: false,
             dataUsers: [] as DataUsers[],
+            isLoading: false,
+            isVerify: false,
         }),
 
         actions: {
@@ -33,6 +34,7 @@ export const useAuthStore = defineStore(
                 };
 
                 this.isLoading = true
+                this.isVerify = true
                 const response = await AuthService.saveUserToMongo(submitData, token)
                 if (response && response.isSuccess == true) {
                     const results = response.results
@@ -43,6 +45,7 @@ export const useAuthStore = defineStore(
                     localStorage.setItem('token', token)
                 }
                 this.isLoading = false
+                this.isVerify = false
                 return response
             },
         },

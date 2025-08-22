@@ -32,7 +32,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Field } from 'vee-validate'
 
 defineProps({
@@ -45,7 +44,7 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const updateValue = (value: any) => {
+const updateValue = (value: string) => {
   emit('update:modelValue', value)
 }
 </script>
