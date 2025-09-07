@@ -4,8 +4,8 @@ export interface Reaction {
 }
 
 export interface MessageData {
-    _id: string,
-    tempId: string,
+    _id?: string,
+    tempId?: string,
     senderId: string,
     receiverId: string,
     text: string,

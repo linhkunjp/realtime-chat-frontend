@@ -85,10 +85,10 @@ export const useChatStore = defineStore(
                     }
                 }
 
-                // cập nhật cache
+                // Cập nhật cache
                 const cached = this.messagesCache.get(this.otherId)
                 if (cached) {
-                    const idx = cached.findIndex(m => (m._id ?? (m as any).tempId) === messageId)
+                    const idx = cached.findIndex(m => (m._id ?? m.tempId) === messageId);
                     if (idx !== -1) cached[idx].reactions = [...message.reactions]
                     // Cập nhật reactive
                     this.messagesCache.set(this.otherId, cached)
@@ -129,7 +129,7 @@ export const useChatStore = defineStore(
 
                     if (isCurrentConversation) {
                         // Nếu có tempId trùng -> thay thế tin nhắn local bằng tin nhắn từ server
-                        const tempIndex = this.messages.findIndex(m => (m as any).tempId && (m as any).tempId === msg.tempId);
+                        const tempIndex = this.messages.findIndex(m => m.tempId && m.tempId === msg.tempId);
                         if (tempIndex !== -1) {
                             this.messages[tempIndex] = msg; // Thay thế tin nhắn tạm bằng tin nhắn thật
                         } else {
@@ -150,7 +150,7 @@ export const useChatStore = defineStore(
                 // Đồng bộ lại reaction
                 socket.off("reactionUpdate")
                 socket.on("reactionUpdate", ({ messageId, reactions }) => {
-                    const msg = this.messages.find(m => (m._id ?? (m as any).tempId) === messageId)
+                    const msg = this.messages.find(m => (m._id ?? m.tempId) === messageId)
                     if (msg) {
                         msg.reactions = reactions
                     }
@@ -158,7 +158,7 @@ export const useChatStore = defineStore(
                     // Cập nhật cache
                     const cached = this.messagesCache.get(this.otherId)
                     if (cached) {
-                        const idx = cached.findIndex(m => (m._id ?? (m as any).tempId) === messageId)
+                        const idx = cached.findIndex(m => (m._id ?? m.tempId) === messageId)
                         if (idx !== -1) cached[idx].reactions = reactions
                         this.messagesCache.set(this.otherId, cached)
                     }
