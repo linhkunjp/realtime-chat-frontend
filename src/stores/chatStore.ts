@@ -95,23 +95,78 @@ export const useChatStore = defineStore(
                 }
             },
 
-            sendMessage(text: string, receiverId: string) {
-                const tempId = Date.now().toString();
-                const msg = {
-                    tempId,
+            sendMessage(
+                text: string,
+                receiverId: string,
+                images: string[],
+                options?: { emit?: boolean; pushLocal?: boolean; tempId?: string; isPending?: boolean }
+            ) {
+                const now = new Date().toISOString();
+                const emit = options?.emit ?? true;
+                const pushLocal = options?.pushLocal ?? true;
+                const baseTemp = options?.tempId ?? Date.now().toString();
+
+                // Tạo object message với hậu tố khác nhau (-text, -img)
+                const createMsg = (suffix: string, txt: string, imgs: string[]) => ({
+                    tempId: `${baseTemp}${suffix}`,
                     senderId: this.userId,
                     receiverId,
-                    text,
-                    createdAt: new Date().toISOString()
-                };
-                this.messages.push(msg);
-                // Cập nhật cache
-                const cached = this.messagesCache.get(receiverId) || [];
-                cached.push(msg);
-                this.messagesCache.set(receiverId, cached);
+                    text: txt,
+                    images: imgs,
+                    createdAt: now,
+                    isPending: !!options?.isPending,
+                });
 
-                // Emit cho server
-                socket.emit('sendMessage', msg);
+                // Thêm hậu tố -text nếu là text
+                if (text?.trim()) {
+                    const textMsg = createMsg("-text", text, []);
+                    if (pushLocal) {
+                        this.messages.push(textMsg);
+                        const cached = this.messagesCache.get(receiverId) || [];
+                        cached.push(textMsg);
+                        this.messagesCache.set(receiverId, cached);
+                    }
+                    if (emit) socket.emit("sendMessage", textMsg);
+                }
+
+                // -img nếu có ảnh
+                if (images && images.length > 0) {
+                    const imgMsg = createMsg("-img", "", images);
+                    if (pushLocal) {
+                        this.messages.push(imgMsg);
+                        const cached = this.messagesCache.get(receiverId) || [];
+                        cached.push(imgMsg);
+                        this.messagesCache.set(receiverId, cached);
+                    }
+                    if (emit) socket.emit("sendMessage", imgMsg);
+                }
+            },
+
+            // Partial biến toàn bộ thuộc tính trong MessageData thành optional
+            updateMessageByTempId(tempId: string, newMsg: Partial<MessageData>) {
+                const idx = this.messages.findIndex(m => m.tempId === tempId);
+                if (idx !== -1) {
+                    this.messages[idx] = { ...this.messages[idx], ...newMsg };
+
+                    // Update lại nếu server đã trả về _id thật
+                    if (newMsg._id) {
+                        this.messages[idx]._id = newMsg._id;
+                        this.messages[idx].isPending = false;
+                        // Xóa tempId để tránh duplicate
+                        delete this.messages[idx].tempId;
+                    }
+                }
+
+                const cached = this.messagesCache.get(this.otherId) || [];
+                const cacheIdx = cached.findIndex(m => m.tempId === tempId);
+                if (cacheIdx !== -1) {
+                    cached[cacheIdx] = { ...cached[cacheIdx], ...newMsg };
+                    if (newMsg._id) {
+                        cached[cacheIdx].isPending = false;
+                        delete cached[cacheIdx].tempId;
+                    }
+                    this.messagesCache.set(this.otherId, cached);
+                }
             },
 
             listenMessages() {

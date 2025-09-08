@@ -8,9 +8,11 @@ export interface MessageData {
     tempId?: string,
     senderId: string,
     receiverId: string,
-    text: string,
+    text?: string,
+    images?: string[];
     createdAt: string,
     reactions?: Reaction[],
+    isPending?: boolean
 }
 
 export interface ListChatData {

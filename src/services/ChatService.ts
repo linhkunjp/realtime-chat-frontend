@@ -1,10 +1,6 @@
 
 import { chatV1 } from "@/utils/axios";
 
-interface MessageOption {
-    senderId: string;
-    receiverId: string;
-}
 
 class ChatService {
 
@@ -46,6 +42,18 @@ class ChatService {
                 return { isSuccess: false, message: error.message };
             }
         }
+    }
+
+    // Upload ảnh lên server
+    static async uploadImages(files: File[]): Promise<string[]> {
+        const formData = new FormData();
+        files.forEach(f => formData.append("images", f));
+
+        const res = await chatV1.post("/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        return res.data.urls;
     }
 }
 
