@@ -12,7 +12,7 @@
     </div>
 
     <!-- Content -->
-    <div ref="heightMain" class="h-full my-6 mx-6 overflow-y-auto scrollbar">
+    <div ref="heightMain" class="h-full my-6 mx-6 overflow-y-auto overflow-x-hidden scrollbar">
       <template v-for="(item, index) in chatStore.messages" :key="item._id || item.tempId">
         <div
           :class="{ 'mb-3': index !== chatStore.messages.length - 1 }"
@@ -30,7 +30,7 @@
                 'bg-amber-200': item.senderId == userId && item.text !== '',
                 'bg-[pink]': item.senderId !== userId && item.text !== '',
               }"
-              class="relative w-fit max-w-[80%] rounded-xl"
+              class="relative w-fit max-w-[80%] rounded-xl group/tooltip"
             >
               <div
                 v-if="item.images && item.images.length > 0"
@@ -68,7 +68,6 @@
 
               <p
                 v-if="item.text !== ''"
-                @click="isShowTime = index"
                 :class="{
                   'mb-3': item.reactions && item.reactions.length > 0,
                 }"
@@ -76,6 +75,14 @@
               >
                 {{ item.text }}
               </p>
+
+              <!-- Tooltip -->
+              <span
+                :class="[item.senderId !== userId ? 'left-1/2' : 'right-1/2']"
+                class="absolute z-1 top-full mt-1 opacity-0 group-hover/tooltip:opacity-100 transition bg-[#eae8e8] text-black text-xs px-2.5 py-2 rounded-xl whitespace-nowrap pointer-events-none"
+              >
+                {{ new Date(item.createdAt).toLocaleString() }}
+              </span>
               <div
                 v-if="item.reactions && item.reactions.length > 0"
                 class="absolute bottom-[-10px] right-1"
@@ -85,13 +92,14 @@
                 </span>
               </div>
 
+              <!-- Reaction -->
               <div
                 v-if="item.senderId !== userId"
-                :class="[item.senderId == userId ? 'left-[-36px]' : 'right-[-36px]']"
+                :class="[item.senderId == userId ? 'left-[-40px]' : 'right-[-40px]']"
                 class="absolute top-0 bottom-0 flex items-center"
               >
                 <div
-                  class="relative hidden group-hover:flex items-center group/icon p-2.5 cursor-pointer"
+                  class="relative hidden hover:bg-[#3b3b4126] rounded-full group-hover:flex items-center group/icon p-2.5 cursor-pointer"
                 >
                   <i class="fa-regular fa-face-smile"></i>
 
@@ -373,6 +381,7 @@ const validateInput = (event: Event): void => {
 
 const sendMessage = async () => {
   if (!newMessage.value.trim() && imageFileData.value.length === 0) return
+  if (chatStore.messages.some((m) => m.isPending)) return
 
   const text = newMessage.value.trim()
   newMessage.value = ''
