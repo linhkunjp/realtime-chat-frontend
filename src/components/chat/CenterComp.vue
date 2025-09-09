@@ -43,7 +43,12 @@
                 }"
               >
                 <div v-for="(img, idx) in item.images" :key="idx" class="relative">
-                  <img :src="img" class="rounded-lg w-full h-48 object-cover cursor-pointer" />
+                  <img
+                    :src="img"
+                    @click="openLightbox(item.images, idx)"
+                    class="rounded-lg w-full h-48 object-cover cursor-pointer"
+                  />
+
                   <div
                     v-if="item.isPending"
                     class="absolute w-full h-full top-0 right-0 bg-[#00000066] flex items-center justify-center"
@@ -53,6 +58,12 @@
                     ></div>
                   </div>
                 </div>
+                <vue-easy-lightbox
+                  :visible="lightboxVisible"
+                  :imgs="lightboxImages"
+                  :index="lightboxIndex"
+                  @hide="lightboxVisible = false"
+                />
               </div>
 
               <p
@@ -207,6 +218,7 @@ import type { MessageData } from '@/types/message'
 import ProfileComp from '../ProfileComp.vue'
 import ProfileImg from '@/assets/imgs/profile.png'
 import dayjs from '@/utils/dayjs'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 import icLike from '@/assets/imgs/ic-like.svg'
 import icLove from '@/assets/imgs/ic-love.svg'
@@ -234,6 +246,16 @@ const reactions = ref([
   { type: 'wow', icon: icWow },
   { type: 'angry', icon: icAngry },
 ])
+
+const lightboxVisible = ref(false)
+const lightboxImages = ref<string[]>([])
+const lightboxIndex = ref(0)
+
+const openLightbox = (imgs: string[], idx: number) => {
+  lightboxImages.value = imgs
+  lightboxIndex.value = idx
+  lightboxVisible.value = true
+}
 
 const newMessage = ref('')
 const heightMain = ref<HTMLDivElement | null>(null)
