@@ -36,9 +36,23 @@ export const useChatStore = defineStore(
                 if (response && response.isSuccess == true) {
                     this.listChats = response.results.map((chat: ListChatData) => {
                         const isMine = chat.lastSenderId === this.userId;
+                        let lastMsg = "";
+                        if (chat.lastMessageType === "image") {
+                            lastMsg = isMine
+                                ? `Bạn đã gửi ${chat.lastMessageImgFile.length} ảnh`
+                                : `${chat.username} đã gửi ${chat.lastMessageImgFile.length} ảnh`;
+                        } else if (chat.lastMessageType === "reaction") {
+                            lastMsg = isMine
+                                ? ` ${chat.username} vừa bày tỏ cảm xúc`
+                                : "Bạn vừa bày tỏ cảm xúc"
+                        } else if (chat.lastMessageType === "text") {
+                            lastMsg = isMine
+                                ? `Bạn: ${chat.lastMessage}`
+                                : chat.lastMessage;
+                        }
                         return {
                             ...chat,
-                            lastMessage: isMine ? `Bạn: ${chat.lastMessage}` : chat.lastMessage
+                            lastMessage: lastMsg
                         };
                     });
                     if (this.listChats.length > 0) {
@@ -171,7 +185,7 @@ export const useChatStore = defineStore(
 
             listenMessages() {
                 // Nhận tin nhắn realtime với userId khi đăng nhập
-                socket.emit("join", this.userId);
+                socket.emit("join", { userId: this.userId, username: this.userName });
 
                 // Chỉ lắng nghe 1 lần tránh duplicate tin nhắn
                 socket.off("receiveMessage");
@@ -217,6 +231,20 @@ export const useChatStore = defineStore(
                         if (idx !== -1) cached[idx].reactions = reactions
                         this.messagesCache.set(this.otherId, cached)
                     }
+
+                    // Đồng bộ listChats nếu đây là lastMessage
+                    const chatIdx = this.listChats.findIndex(
+                        c => c.userId === this.otherId
+                    )
+                    if (chatIdx !== -1) {
+                        const chat = this.listChats[chatIdx]
+
+                        // Kiểm tra messageId có phải lastMessage không
+                        if ((msg?._id ?? msg?.tempId) === chat.lastMessageId) {
+                            chat.lastMessageReactions = reactions
+                            chat.lastMessageType = reactions.length > 0 ? "reaction" : "text"
+                        }
+                    }
                 })
 
                 // Chỉ lắng nghe 1 lần
@@ -230,12 +258,19 @@ export const useChatStore = defineStore(
 
                     if (index !== -1) {
                         const isMine = lastMsg.senderId === this.userId;
-                        this.listChats[index].lastMessage = isMine
-                            ? `Bạn: ${lastMsg.text}`
-                            : lastMsg.text;
+                        let text = ""
+                        if (lastMsg.type === "image") {
+                            text = isMine ? `Bạn đã gửi ${lastMsg.images.length} ảnh` : `${lastMsg.senderName} đã gửi ${lastMsg.images.length} ảnh`
+                        } else if (lastMsg.type === "reaction") {
+                            text = isMine ? "Bạn vừa bày tỏ cảm xúc" : ` ${lastMsg.senderName} vừa bày tỏ cảm xúc`
+                        } else if (lastMsg.type === "text") {
+                            text = isMine ? `Bạn: ${lastMsg.text}` : lastMsg.text
+                        }
+                        this.listChats[index].lastMessage = text
 
                         this.listChats[index].lastMessageTime = lastMsg.createdAt;
                         this.listChats[index].lastSenderId = lastMsg.senderId;
+                        this.listChats[index].lastMessageType = lastMsg.type;
 
                         this.listChats.sort((a, b) =>
                             new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()

@@ -34,30 +34,39 @@
             >
               <div
                 v-if="item.images && item.images.length > 0"
-                class="mt-2 mb-3 grid gap-2 bg-transparent"
+                class="mt-2 grid gap-2 bg-transparent"
                 :class="{
                   'grid-cols-1': item.images.length === 1,
                   'grid-cols-2': item.images.length === 2,
                   'grid-cols-3': item.images.length >= 3,
+                  'mb-3': item.reactions && item.reactions.length > 0,
                 }"
               >
-                <img
-                  v-for="(img, idx) in item.images"
-                  :key="idx"
-                  :src="img"
-                  class="rounded-lg w-full h-48 object-cover cursor-pointer"
-                />
+                <div v-for="(img, idx) in item.images" :key="idx" class="relative">
+                  <img :src="img" class="rounded-lg w-full h-48 object-cover cursor-pointer" />
+                  <div
+                    v-if="item.isPending"
+                    class="absolute w-full h-full top-0 right-0 bg-[#00000066] flex items-center justify-center"
+                  >
+                    <div
+                      class="loader w-[40px] h-[40px] rounded-full border-4 border-[#f3f3f3] !border-t-[#3498db]"
+                    ></div>
+                  </div>
+                </div>
               </div>
 
               <p
                 v-if="item.text !== ''"
                 @click="isShowTime = index"
+                :class="{
+                  'mb-3': item.reactions && item.reactions.length > 0,
+                }"
                 class="w-fit px-4 py-2 text-justify text-sm leading-5 flex items-center"
               >
                 {{ item.text }}
               </p>
               <div
-                v-if="item.reactions && item.reactions.length"
+                v-if="item.reactions && item.reactions.length > 0"
                 class="absolute bottom-[-10px] right-1"
               >
                 <span v-for="(r, idx) in item.reactions" :key="idx">
@@ -233,6 +242,7 @@ const inputContainer = ref<HTMLDivElement | null>(null)
 
 const imageFileData = ref<ImageFileData[]>([])
 
+// Chọn ảnh upload
 const handleChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (!target.files) return
@@ -257,6 +267,7 @@ const handleChange = (event: Event) => {
 
   // Reset để chọn lại cùng 1 file
   target.value = ''
+  textarea.value?.focus()
 }
 
 // Xóa ảnh
@@ -265,6 +276,7 @@ const removeFile = (index: number) => {
     imageFileData.value.splice(index, 1)
 
     imageFileData.value = [...imageFileData.value]
+    textarea.value?.focus()
   }
 }
 
@@ -426,5 +438,29 @@ textarea {
 .scroll-y::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
   cursor: pointer;
+}
+
+.loader {
+  -webkit-animation: spin 1.5s linear infinite; /* Safari */
+  animation: spin 1.5s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

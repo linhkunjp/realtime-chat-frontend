@@ -22,6 +22,11 @@ export interface ListChatData {
     image: string,
     lastMessage: string,
     lastMessageTime: string,
+    lastMessageImgFile: string[],
+    lastMessageReactions: string[],
+    lastMessageType: string,
     lastSenderId: string,
+    lastMessageId: string,
+    lastSenderName: string,
     reactions?: Reaction[]
 }
