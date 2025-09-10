@@ -87,9 +87,13 @@
                 v-if="item.reactions && item.reactions.length > 0"
                 class="absolute bottom-[-10px] right-1"
               >
-                <span v-for="(r, idx) in item.reactions" :key="idx">
-                  <img :src="getIcon(r.type)" class="w-5 min-w-5" />
-                </span>
+                <div
+                  v-for="(r, idx) in item.reactions"
+                  :key="idx"
+                  class="rounded-full ring-2 ring-[#252728ba] shadow-xl/30"
+                >
+                  <img :src="getIcon(r.type)" class="w-4 min-w-4" />
+                </div>
               </div>
 
               <!-- Reaction -->

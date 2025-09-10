@@ -71,7 +71,6 @@ const filteredChats = computed(() => {
 })
 
 const getConversation = async (dataName: string, otherId: string, image: string) => {
-  chatStore.markAsRead(chatStore.userId, otherId)
   // Return nếu đang trong đoạn chat
   if (otherId == chatStore.otherId) return
 
@@ -91,5 +90,7 @@ const getConversation = async (dataName: string, otherId: string, image: string)
     await chatStore.getChatDetail(otherId, chatStore.userId)
     chatStore.messagesCache.set(otherId, [...chatStore.messages])
   }
+
+  chatStore.markAsRead(chatStore.userId, otherId)
 }
 </script>
