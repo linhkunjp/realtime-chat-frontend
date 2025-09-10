@@ -192,28 +192,52 @@ export const useChatStore = defineStore(
 
                 // Lắng nghe sự kiện khi có tin nhắn mới được gửi đến
                 socket.on("receiveMessage", (msg: MessageData) => {
+
+                    // Nếu tin nhắn đến từ otherId trong conversation đang mở
+                    if (msg.senderId === this.otherId && msg.receiverId === this.userId) {
+                        msg.isReaded = true;
+                        socket.emit("markAsRead", { myId: this.userId, otherId: this.otherId });
+
+                        const chatIdx = this.listChats.findIndex(c => c.userId === this.otherId);
+                        if (chatIdx !== -1) this.listChats[chatIdx].isReaded = true;
+                    } else {
+                        msg.isReaded = false;
+                    }
+
+                    // Nếu đang mở đúng conversation
                     const isCurrentConversation =
                         (msg.senderId === this.otherId && msg.receiverId === this.userId) ||
                         (msg.senderId === this.userId && msg.receiverId === this.otherId);
 
                     if (isCurrentConversation) {
-                        // Nếu có tempId trùng -> thay thế tin nhắn local bằng tin nhắn từ server
-                        const tempIndex = this.messages.findIndex(m => m.tempId && m.tempId === msg.tempId);
-                        if (tempIndex !== -1) {
-                            this.messages[tempIndex] = msg; // Thay thế tin nhắn tạm bằng tin nhắn thật
+                        // Check cả _id và tempId để tránh duplicate
+                        const idx = this.messages.findIndex(
+                            m => (m._id && m._id === msg._id) || (m.tempId && m.tempId === msg.tempId)
+                        );
+
+                        if (idx !== -1) {
+                            this.messages[idx] = msg;
                         } else {
                             this.messages.push(msg);
                         }
-
-                        // Cập nhật cache
-                        const cached = this.messagesCache.get(this.otherId) || [];
-                        if (tempIndex !== -1) {
-                            cached[tempIndex] = msg;
-                        } else {
-                            cached.push(msg);
-                        }
-                        this.messagesCache.set(this.otherId, cached);
                     }
+
+
+                    // Update cache
+                    const otherId =
+                        msg.senderId === this.userId ? msg.receiverId : msg.senderId;
+
+                    const cached = this.messagesCache.get(otherId) || [];
+                    const cIdx = cached.findIndex(
+                        m => (m._id && m._id === msg._id) || (m.tempId && m.tempId === msg.tempId)
+                    );
+                    if (cIdx !== -1) {
+                        cached[cIdx] = msg;
+                    } else {
+                        cached.push(msg);
+                    }
+
+                    this.messagesCache.set(otherId, cached);
                 });
 
                 // Đồng bộ lại reaction
@@ -247,6 +271,50 @@ export const useChatStore = defineStore(
                     }
                 })
 
+                socket.off("messagesRead");
+
+                socket.on("messagesRead", ({ readerId, conversationWith }) => {
+                    // Nếu người đọc là mình
+                    if (readerId === this.userId) {
+                        this.messages = this.messages.map(m => {
+                            if (m.senderId === conversationWith && m.receiverId === this.userId) {
+                                return { ...m, isReaded: true };
+                            }
+                            return m;
+                        });
+
+                        if (this.messagesCache.has(conversationWith)) {
+                            const cached = this.messagesCache.get(conversationWith)!.map(m => {
+                                if (m.senderId === conversationWith && m.receiverId === this.userId) {
+                                    return { ...m, isReaded: true };
+                                }
+                                return m;
+                            });
+                            this.messagesCache.set(conversationWith, cached);
+                        }
+                    }
+
+                    // Nếu người đọc là người kia
+                    if (readerId !== this.userId) {
+                        this.messages = this.messages.map(m => {
+                            if (m.senderId === this.userId && m.receiverId === readerId) {
+                                return { ...m, isReaded: true };
+                            }
+                            return m;
+                        });
+
+                        if (this.messagesCache.has(readerId)) {
+                            const cached = this.messagesCache.get(readerId)!.map(m => {
+                                if (m.senderId === this.userId && m.receiverId === readerId) {
+                                    return { ...m, isReaded: true };
+                                }
+                                return m;
+                            });
+                            this.messagesCache.set(readerId, cached);
+                        }
+                    }
+                });
+
                 // Chỉ lắng nghe 1 lần
                 socket.off("lastMessageUpdate");
 
@@ -271,6 +339,7 @@ export const useChatStore = defineStore(
                         this.listChats[index].lastMessageTime = lastMsg.createdAt;
                         this.listChats[index].lastSenderId = lastMsg.senderId;
                         this.listChats[index].lastMessageType = lastMsg.type;
+                        this.listChats[index].isReaded = lastMsg.isReaded ?? false;
 
                         this.listChats.sort((a, b) =>
                             new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
@@ -286,6 +355,23 @@ export const useChatStore = defineStore(
 
             isUserOnline(userId: string) {
                 return this.onlineUsers.includes(userId);
+            },
+
+            // Emit khi mở conversation
+            markAsRead(myId: string, otherId: string) {
+                // Update local messages + listChats
+                this.messages.forEach(m => {
+                    if (m.senderId === otherId && m.receiverId === myId) m.isReaded = true;
+                });
+                if (this.messagesCache.has(otherId)) {
+                    this.messagesCache.get(otherId)!.forEach(m => {
+                        if (m.senderId === otherId && m.receiverId === myId) m.isReaded = true;
+                    });
+                }
+                const chatIdx = this.listChats.findIndex(c => c.userId === otherId);
+                if (chatIdx !== -1) this.listChats[chatIdx].isReaded = true;
+
+                socket.emit("markAsRead", { myId, otherId });
             }
         },
     }

@@ -25,7 +25,13 @@
       <p v-if="isOther" class="text-xs">
         <span class="text-black">{{ chatStore.isUserOnline(id) ? 'online' : 'offline' }}</span>
       </p>
-      <p v-if="isMessage" class="text-xs last">{{ lastMessage }}</p>
+      <p
+        v-if="isMessage"
+        :class="{ 'text-red-600': isReaded == false && chatStore.userId !== lastSenderId }"
+        class="text-xs last"
+      >
+        {{ lastMessage }}
+      </p>
     </div>
 
     <button
@@ -52,6 +58,7 @@ defineProps({
     default: '',
   },
   lastMessage: String,
+  lastSenderId: String,
   isUser: {
     type: Boolean,
     default: false,
@@ -61,6 +68,10 @@ defineProps({
     default: false,
   },
   isMessage: {
+    type: Boolean,
+    default: false,
+  },
+  isReaded: {
     type: Boolean,
     default: false,
   },

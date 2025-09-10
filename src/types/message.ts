@@ -12,7 +12,8 @@ export interface MessageData {
     images?: string[];
     createdAt: string,
     reactions?: Reaction[],
-    isPending?: boolean
+    isPending?: boolean,
+    isReaded?: boolean
 }
 
 export interface ListChatData {
@@ -28,5 +29,6 @@ export interface ListChatData {
     lastSenderId: string,
     lastMessageId: string,
     lastSenderName: string,
-    reactions?: Reaction[]
+    reactions?: Reaction[],
+    isReaded: boolean
 }
