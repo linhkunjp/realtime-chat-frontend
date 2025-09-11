@@ -69,6 +69,8 @@ export const useChatStore = defineStore(
                             await this.getChatDetail(first.userId, this.userId);
                             this.messagesCache.set(first.userId, [...this.messages]);
                         }
+
+                        this.markAsRead(this.userId, first.userId);
                     }
                 }
             },
@@ -156,8 +158,8 @@ export const useChatStore = defineStore(
                 }
             },
 
-            // Partial biến toàn bộ thuộc tính trong MessageData thành optional
-            updateMessageByTempId(tempId: string, newMsg: Partial<MessageData>) {
+            // Cập nhật lại messages sau khi đã load xong ảnh
+            updateMessageByTempId(tempId: string, newMsg: MessageData) {
                 const idx = this.messages.findIndex(m => m.tempId === tempId);
                 if (idx !== -1) {
                     this.messages[idx] = { ...this.messages[idx], ...newMsg };
@@ -274,7 +276,7 @@ export const useChatStore = defineStore(
                 socket.off("messagesRead");
 
                 socket.on("messagesRead", ({ readerId, conversationWith }) => {
-                    // Nếu người đọc là mình
+                    // Nếu người đọc là mình 
                     if (readerId === this.userId) {
                         this.messages = this.messages.map(m => {
                             if (m.senderId === conversationWith && m.receiverId === this.userId) {
@@ -292,9 +294,17 @@ export const useChatStore = defineStore(
                             });
                             this.messagesCache.set(conversationWith, cached);
                         }
+
+                        // Cập nhật listChats
+                        this.listChats = this.listChats.map(chat => {
+                            if (chat.userId === conversationWith) {
+                                return { ...chat, isReaded: true };
+                            }
+                            return chat;
+                        });
                     }
 
-                    // Nếu người đọc là người kia
+                    // Nếu người đọc là người kia 
                     if (readerId !== this.userId) {
                         this.messages = this.messages.map(m => {
                             if (m.senderId === this.userId && m.receiverId === readerId) {
@@ -312,6 +322,14 @@ export const useChatStore = defineStore(
                             });
                             this.messagesCache.set(readerId, cached);
                         }
+
+                        // Cập nhật listChats
+                        this.listChats = this.listChats.map(chat => {
+                            if (chat.userId === readerId) {
+                                return { ...chat, isReaded: true };
+                            }
+                            return chat;
+                        });
                     }
                 });
 
@@ -344,6 +362,16 @@ export const useChatStore = defineStore(
                         this.listChats.sort((a, b) =>
                             new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
                         );
+
+                        if (this.otherId && (
+                            lastMsg.senderId === this.otherId || lastMsg.receiverId === this.otherId
+                        )) {
+                            // Nếu đang mở đúng cuộc trò chuyện và lastMsg không phải của mình
+                            // Emit đã đọc
+                            if (lastMsg.senderId !== this.userId) {
+                                this.markAsRead(this.userId, this.otherId);
+                            }
+                        }
                     }
                 });
 
@@ -372,7 +400,13 @@ export const useChatStore = defineStore(
                 if (chatIdx !== -1) this.listChats[chatIdx].isReaded = true;
 
                 socket.emit("markAsRead", { myId, otherId });
-            }
+            },
+
+            // Tổng các tin nhắn chưa đọc
+            getUnreadCount(otherId: string): number {
+                const cached = this.messagesCache.get(otherId) || []
+                return cached.filter(m => !m.isReaded && m.receiverId === this.userId).length
+            },
         },
     }
 )

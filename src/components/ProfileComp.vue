@@ -10,7 +10,7 @@
     <div class="relative">
       <img
         :src="image || ProfileImg"
-        :class="isMessage ? 'w-[50px] h-[50px] min-w-[50px]' : 'w-[54px] h-[54px] min-w-[50px]'"
+        :class="isMessage ? 'h-[50px] min-w-[50px]' : ' h-[54px] min-w-[54px]'"
         class="rounded-full"
       />
       <div
@@ -19,7 +19,7 @@
         class="absolute w-3 h-3 rounded-full right-[1px] bottom-0.5 border-2"
       ></div>
     </div>
-    <div>
+    <div class="w-full">
       <p class="text-sm font-semibold mb-0.5">{{ name }}</p>
       <p v-if="isUser" class="text-xs">{{ email }}</p>
       <p v-if="isOther" class="text-xs">
@@ -27,12 +27,23 @@
       </p>
       <p
         v-if="isMessage"
-        :class="{ 'text-red-600': isReaded == false && chatStore.userId !== lastSenderId }"
+        :class="{ 'font-semibold': isReaded == false && chatStore.userId !== lastSenderId }"
         class="text-xs last"
       >
         {{ lastMessage }}
       </p>
     </div>
+    <div
+      v-if="chatStore.getUnreadCount(id) > 1"
+      class="whitespace-nowrap text-xs bg-[#aaa8a8] rounded-lg px-1"
+    >
+      {{ `${chatStore.getUnreadCount(id)}+` }}
+    </div>
+
+    <div
+      v-if="chatStore.getUnreadCount(id) == 1"
+      class="min-w-3 min-h-3 w-3 h-3 rounded-full bg-blue-600"
+    ></div>
 
     <button
       v-if="isTablet && isUser"

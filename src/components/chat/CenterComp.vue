@@ -90,9 +90,9 @@
                 <div
                   v-for="(r, idx) in item.reactions"
                   :key="idx"
-                  class="rounded-full ring-2 ring-[#252728ba] shadow-xl/30"
+                  class="rounded-full ring-2 ring-[#252728ba] shadow-xl/30 max-h-[15px] max-w-[15px]"
                 >
-                  <img :src="getIcon(r.type)" class="w-4 min-w-4" />
+                  <img :src="getIcon(r.type)" />
                 </div>
               </div>
 
