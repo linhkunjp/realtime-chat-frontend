@@ -4,12 +4,14 @@
     <Toast position="top-center" group="tl" class="auth" />
   </div>
   <LoadingComp v-if="authStore.isLoading" :bgColor="'#00000066'" />
+  <ModalComp />
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import LoadingComp from '@/components/LoadingComp.vue'
 import Toast from 'primevue/toast'
+import ModalComp from '@/components/ModalComp.vue'
 
 const authStore = useAuthStore()
 </script>

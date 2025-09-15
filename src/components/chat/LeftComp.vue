@@ -1,12 +1,21 @@
 <template>
   <div class="h-full">
-    <!-- Infor -->
-    <ProfileComp
-      :name="authStore.username"
-      :email="authStore.email"
-      :image="authStore.image"
-      :isUser="true"
-    />
+    <div class="flex items-center">
+      <ProfileComp
+        :name="authStore.username"
+        :email="authStore.email"
+        :image="authStore.image"
+        :isUser="true"
+        class="flex-1"
+      />
+
+      <button
+        @click="handleLogout"
+        class="text-xl text-white mr-4 px-3 py-2 hover:bg-[#3b3b4126] rounded-full"
+      >
+        <i class="fa-solid fa-power-off"></i>
+      </button>
+    </div>
 
     <!-- Search -->
     <div class="border border-[#dfe5ef] rounded-lg h-[42px] flex items-center py-6 mt-4 mb-6 mx-6">
@@ -19,13 +28,6 @@
         <img class="w-[21px] h-[21px]" src="@/assets/imgs/ic-search.svg" />
       </button>
     </div>
-
-    <!-- Filter -->
-    <!-- <div class="mx-6">
-      <select>
-        <option selected>Recent chat</option>
-      </select>
-    </div> -->
 
     <!-- List user -->
     <div class="max-h-[calc(100%-177px)] overflow-y-auto mt-2.5">
@@ -77,10 +79,13 @@ import { ref, computed, watch } from 'vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/auth'
-import ProfileComp from '../ProfileComp.vue'
+import { useModalStore } from '@/stores/modal'
+
 import { useToast } from 'primevue'
 import Toast from 'primevue/toast'
+import ProfileComp from '../ProfileComp.vue'
 import type { ToastMessageOptions } from 'primevue/toast'
+
 interface CustomToastMessage extends ToastMessageOptions {
   senderId: string
   image: string
@@ -92,6 +97,8 @@ const chatStore = useChatStore()
 const authStore = useAuthStore()
 const searchTerm = ref('')
 const toast = useToast()
+
+const modalStore = useModalStore()
 
 // Lọc danh sách user theo tên
 const filteredChats = computed(() => {
@@ -124,6 +131,10 @@ const getConversation = async (dataName: string, otherId: string, image: string)
   }
 
   chatStore.markAsRead(chatStore.userId, otherId)
+}
+
+const handleLogout = () => {
+  modalStore.openModal(true)
 }
 
 // Theo dõi listChats từ store

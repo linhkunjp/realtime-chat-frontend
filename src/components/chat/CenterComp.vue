@@ -8,7 +8,6 @@
         :image="chatStore.image"
         :id="chatStore.otherId"
       />
-      <button @click="handleLogout" class="text-xl text-black px-5 py-4">Sign out</button>
     </div>
 
     <!-- Content -->
@@ -225,7 +224,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
-import { useClerk } from '@clerk/vue'
 import type { MessageData } from '@/types/message'
 import ProfileComp from '../ProfileComp.vue'
 import ProfileImg from '@/assets/imgs/profile.png'
@@ -249,7 +247,6 @@ interface ImageFileData {
 const chatStore = useChatStore()
 const userName = computed(() => chatStore.userName)
 const userId = ref(chatStore.userId)
-const clerk = useClerk()
 const isShowTime = ref(-1)
 const reactions = ref([
   { type: 'like', icon: icLike },
@@ -312,16 +309,6 @@ const removeFile = (index: number) => {
     imageFileData.value = [...imageFileData.value]
     textarea.value?.focus()
   }
-}
-
-const handleLogout = async () => {
-  await clerk.value?.signOut()
-  localStorage.removeItem('token')
-  localStorage.removeItem('user_id')
-  localStorage.removeItem('email')
-  localStorage.removeItem('username')
-  localStorage.removeItem('image')
-  window.location.href = '/'
 }
 
 const getIcon = (type: string) => {
@@ -473,29 +460,5 @@ textarea {
 .scroll-y::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
   cursor: pointer;
-}
-
-.loader {
-  -webkit-animation: spin 1.5s linear infinite; /* Safari */
-  animation: spin 1.5s linear infinite;
-}
-
-/* Safari */
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 </style>
