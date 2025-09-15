@@ -64,8 +64,8 @@
             <span class="font-bold">{{ slotProps.message.summary }}</span>
           </div>
           <div class="font-regular text-sm ml-2">{{ slotProps.message.detail }}</div>
-          <p class="font-bold">{{ slotProps.message.image }}</p>
-          <p class="font-bold">{{ slotProps.message.senderId }}</p>
+          <!-- <p class="font-bold">{{ slotProps.message.image }}</p>
+          <p class="font-bold">{{ slotProps.message.senderId }}</p> -->
         </div>
       </template>
     </Toast>
@@ -80,6 +80,12 @@ import { useAuthStore } from '@/stores/auth'
 import ProfileComp from '../ProfileComp.vue'
 import { useToast } from 'primevue'
 import Toast from 'primevue/toast'
+import type { ToastMessageOptions } from 'primevue/toast'
+interface CustomToastMessage extends ToastMessageOptions {
+  senderId: string
+  image: string
+  id: string
+}
 
 const { isMobile, isTablet } = useDevice()
 const chatStore = useChatStore()
@@ -96,7 +102,8 @@ const filteredChats = computed(() => {
 })
 
 const getConversation = async (dataName: string, otherId: string, image: string) => {
-  toast.removeAllGroups()
+  // toast.removeAllGroups()
+  toast.remove({ id: otherId } as CustomToastMessage)
   if (isTablet || isMobile) {
     chatStore.showMenu(false)
   }
@@ -133,11 +140,12 @@ watch(
         severity: 'secondary',
         summary: `${latestChat.username}`,
         detail: `${latestChat.lastMessage}`,
-        group: 'bc',
-        life: 600000,
         image: `${latestChat.image}`,
         senderId: `${latestChat.userId}`,
-      } as any)
+        id: latestChat.userId,
+        group: 'bc',
+        life: 600000,
+      } as CustomToastMessage)
     }
   },
   { deep: true },
