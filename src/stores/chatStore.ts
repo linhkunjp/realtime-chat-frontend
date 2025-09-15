@@ -244,31 +244,31 @@ export const useChatStore = defineStore(
 
                 // Đồng bộ lại reaction
                 socket.off("reactionUpdate")
-                socket.on("reactionUpdate", ({ messageId, reactions }) => {
+                socket.on("reactionUpdate", ({ messageId, reactions, senderId, receiverId }) => {
+                    // Conversation đang mở
                     const msg = this.messages.find(m => (m._id ?? m.tempId) === messageId)
                     if (msg) {
                         msg.reactions = reactions
                     }
 
-                    // Cập nhật cache
-                    const cached = this.messagesCache.get(this.otherId)
+                    const conversationId = senderId === this.userId ? receiverId : senderId
+
+                    // Update trong cache
+                    const cached = this.messagesCache.get(conversationId)
                     if (cached) {
                         const idx = cached.findIndex(m => (m._id ?? m.tempId) === messageId)
-                        if (idx !== -1) cached[idx].reactions = reactions
-                        this.messagesCache.set(this.otherId, cached)
+                        if (idx !== -1) {
+                            cached[idx].reactions = reactions
+                            this.messagesCache.set(conversationId, [...cached])
+                        }
                     }
 
-                    // Đồng bộ listChats nếu đây là lastMessage
-                    const chatIdx = this.listChats.findIndex(
-                        c => c.userId === this.otherId
-                    )
+                    // Update listChats
+                    const chatIdx = this.listChats.findIndex(c => c.userId === conversationId)
                     if (chatIdx !== -1) {
-                        const chat = this.listChats[chatIdx]
-
-                        // Kiểm tra messageId có phải lastMessage không
-                        if ((msg?._id ?? msg?.tempId) === chat.lastMessageId) {
-                            chat.lastMessageReactions = reactions
-                            chat.lastMessageType = reactions.length > 0 ? "reaction" : "text"
+                        if ((msg?._id ?? msg?.tempId) === this.listChats[chatIdx].lastMessageId) {
+                            this.listChats[chatIdx].lastMessageReactions = reactions
+                            this.listChats[chatIdx].lastMessageType = reactions.length > 0 ? "reaction" : "text"
                         }
                     }
                 })

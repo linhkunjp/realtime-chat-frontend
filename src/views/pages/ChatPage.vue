@@ -25,16 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import LeftComp from '@/components/chat/LeftComp.vue'
 import CenterComp from '@/components/chat/CenterComp.vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
-import { useAuthStore } from '@/stores/auth'
 
 const { isMobile, isTablet, isDesktop } = useDevice()
 const chatStore = useChatStore()
-const authStore = useAuthStore()
 
 onMounted(async () => {
   await chatStore.getChatList()

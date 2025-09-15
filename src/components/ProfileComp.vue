@@ -20,7 +20,7 @@
       ></div>
     </div>
     <div class="w-full">
-      <p class="text-sm font-semibold mb-0.5">{{ name }}</p>
+      <p class="text-sm font-semibold mb-0.5 last">{{ name }}</p>
       <p v-if="isUser" class="text-xs">{{ email }}</p>
       <p v-if="isOther" class="text-xs">
         <span class="text-black">{{ chatStore.isUserOnline(id) ? 'online' : 'offline' }}</span>
@@ -98,5 +98,8 @@ p.last {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 </style>

@@ -28,7 +28,7 @@
     </div> -->
 
     <!-- List user -->
-    <div class="max-h-[200px] overflow-y-auto mt-2.5">
+    <div class="max-h-[calc(100%-177px)] overflow-y-auto mt-2.5">
       <div
         v-for="(item, index) in filteredChats"
         :key="index"
@@ -47,20 +47,45 @@
         />
       </div>
     </div>
+
+    <Toast position="top-center" group="bc" class="messages">
+      <template #message="slotProps">
+        <div
+          @click="
+            getConversation(
+              slotProps.message.summary,
+              slotProps.message.senderId,
+              slotProps.message.image,
+            )
+          "
+          class="flex flex-col items-start flex-auto cursor-pointer"
+        >
+          <div class="flex items-center gap-2 ml-2">
+            <span class="font-bold">{{ slotProps.message.summary }}</span>
+          </div>
+          <div class="font-regular text-sm ml-2">{{ slotProps.message.detail }}</div>
+          <p class="font-bold">{{ slotProps.message.image }}</p>
+          <p class="font-bold">{{ slotProps.message.senderId }}</p>
+        </div>
+      </template>
+    </Toast>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/auth'
 import ProfileComp from '../ProfileComp.vue'
+import { useToast } from 'primevue'
+import Toast from 'primevue/toast'
 
-const { isTablet } = useDevice()
+const { isMobile, isTablet } = useDevice()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 const searchTerm = ref('')
+const toast = useToast()
 
 // Lọc danh sách user theo tên
 const filteredChats = computed(() => {
@@ -71,6 +96,10 @@ const filteredChats = computed(() => {
 })
 
 const getConversation = async (dataName: string, otherId: string, image: string) => {
+  toast.removeAllGroups()
+  if (isTablet || isMobile) {
+    chatStore.showMenu(false)
+  }
   // Return nếu đang trong đoạn chat
   if (otherId == chatStore.otherId) return
 
@@ -78,10 +107,6 @@ const getConversation = async (dataName: string, otherId: string, image: string)
   chatStore.userName = dataName
   chatStore.otherId = otherId
   chatStore.image = image
-
-  if (isTablet) {
-    chatStore.showMenu(false)
-  }
 
   // Kiểm tra đã có cache
   if (chatStore.messagesCache.has(otherId)) {
@@ -93,4 +118,28 @@ const getConversation = async (dataName: string, otherId: string, image: string)
 
   chatStore.markAsRead(chatStore.userId, otherId)
 }
+
+// Theo dõi listChats từ store
+watch(
+  () => chatStore.listChats,
+  (newVal) => {
+    if (!newVal) return
+    // Lấy chat mới nhất
+    const latestChat = newVal[0]
+
+    // Nếu tin nhắn cuối chưa đọc và không phải do mình gửi thì show toast
+    if (latestChat && !latestChat.isReaded && latestChat.lastSenderId !== chatStore.userId) {
+      toast.add({
+        severity: 'secondary',
+        summary: `${latestChat.username}`,
+        detail: `${latestChat.lastMessage}`,
+        group: 'bc',
+        life: 600000,
+        image: `${latestChat.image}`,
+        senderId: `${latestChat.userId}`,
+      } as any)
+    }
+  },
+  { deep: true },
+)
 </script>

@@ -51,7 +51,7 @@
 
                   <div
                     v-if="item.isPending"
-                    class="absolute w-full h-full top-0 right-0 bg-[#00000066] flex items-center justify-center"
+                    class="absolute w-full h-full top-0 right-0 bg-[#00000066] rounded-lg flex items-center justify-center"
                   >
                     <div
                       class="loader w-[40px] h-[40px] rounded-full border-4 border-[#f3f3f3] !border-t-[#3498db]"

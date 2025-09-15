@@ -1,7 +1,7 @@
 <template>
   <router-view class="h-full" />
   <div>
-    <Toast position="top-center" group="tl" />
+    <Toast position="top-center" group="tl" class="auth" />
   </div>
   <LoadingComp v-if="authStore.isLoading" :bgColor="'#00000066'" />
 </template>
@@ -15,17 +15,17 @@ const authStore = useAuthStore()
 </script>
 
 <style>
-.p-toast-message {
+.auth .p-toast-message {
   min-width: 500px;
   min-height: 40px;
 }
 
-.p-toast-message-content {
+.auth .p-toast-message-content {
   padding: 20px !important;
   align-items: center !important;
 }
 
-.p-toast-summary {
+.auth .p-toast-summary {
   margin-left: 10px !important;
   font-size: 18px !important;
 }
@@ -33,5 +33,9 @@ const authStore = useAuthStore()
 .p-toast-close-button {
   margin: 0;
   right: 0;
+}
+
+.messages .p-toast-message-secondary {
+  background: #27272aab;
 }
 </style>
