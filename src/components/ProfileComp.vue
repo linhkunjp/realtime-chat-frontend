@@ -1,12 +1,5 @@
 <template>
   <div class="flex items-center gap-3 px-6 py-4">
-    <button
-      v-if="!isDesktop && isOther"
-      @click="chatStore.showMenu(true)"
-      class="border-none outline-none w-[26px] h-[26px] mr-2"
-    >
-      <img src="@/assets/imgs/ic-menu.svg" />
-    </button>
     <div class="relative">
       <img
         :src="image || ProfileImg"
@@ -46,11 +39,11 @@
     ></div>
 
     <button
-      v-if="isTablet && isUser"
-      @click="chatStore.showMenu(false)"
-      class="border-none outline-none w-[26px] h-[26px] ml-auto"
+      v-if="!isDesktop && isOther"
+      @click="chatStore.showMenu(true)"
+      class="border-none outline-none w-[26px] h-[26px] mr-2"
     >
-      <img src="@/assets/imgs/ic-close.svg" />
+      <img src="@/assets/imgs/ic-menu.svg" />
     </button>
   </div>
 </template>
@@ -88,7 +81,7 @@ defineProps({
   },
 })
 
-const { isTablet, isDesktop } = useDevice()
+const { isDesktop } = useDevice()
 const chatStore = useChatStore()
 </script>
 

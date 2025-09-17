@@ -34,6 +34,7 @@ const handleSuccess = (userData: UserData, token: string) => {
 }
 
 const handleRedirect = () => {
+  authStore.isLoading = false
   toast.add({
     severity: 'success',
     summary: 'Xác thực thành công',

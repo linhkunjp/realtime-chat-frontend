@@ -96,17 +96,21 @@ const handleSubmit = async () => {
       const customError = (error as ClerkError).errors?.[0]
       const code = customError.code
       let message = ''
-      if (code && code == 'form_identifier_not_found') {
-        message = 'Tài khoản không tồn tại'
-      } else if (code && code == 'form_password_incorrect') {
-        message = 'Mật khẩu không đúng'
+      if (code) {
+        if (code == 'form_identifier_not_found') {
+          message = 'Tài khoản không tồn tại'
+        } else if (code == 'form_password_incorrect') {
+          message = 'Mật khẩu không đúng'
+        } else if (code == 'strategy_for_user_invalid') {
+          message = 'Tài khoản này đã được đăng ký qua Google. Vui lòng đăng nhập bằng Google'
+        }
+        toast.add({
+          severity: 'error',
+          summary: message,
+          group: 'tl',
+          life: 3000,
+        })
       }
-      toast.add({
-        severity: 'error',
-        summary: message,
-        group: 'tl',
-        life: 3000,
-      })
     }
   }
 }
