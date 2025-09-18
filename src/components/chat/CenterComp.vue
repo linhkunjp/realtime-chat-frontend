@@ -1,7 +1,7 @@
 <template>
   <div class="h-ful flex flex-col">
     <!-- Header -->
-    <div class="border-b border-[#dfe5ef]">
+    <div class="border-b border-[#dfe5ef] dark:border-[#272A30]">
       <ProfileComp
         :name="userName"
         :isOther="true"
@@ -11,17 +11,20 @@
     </div>
 
     <!-- Content -->
-    <div ref="heightMain" class="h-full my-6 mx-6 overflow-y-auto overflow-x-hidden scrollbar">
+    <div
+      ref="heightMain"
+      class="h-full pt-6 px-6 overflow-y-auto overflow-x-hidden scrollbar bg-[#FAFAFA] dark:bg-black"
+    >
       <template v-for="(item, index) in chatStore.messages" :key="item._id || item.tempId">
         <MessageComp :item="item" :index="index" />
       </template>
     </div>
 
     <!-- Footer -->
-    <div class="mx-6 mb-6 flex items-end">
+    <div class="mx-6 my-3 flex items-end">
       <div
         ref="inputContainer"
-        class="border border-[#d9d9d9] rounded-2xl flex items-center w-full flex-col"
+        class="border border-[#dfe5ef] dark:border-[#272A30] rounded-2xl flex items-center w-full flex-col"
       >
         <div class="w-full">
           <div
@@ -63,7 +66,7 @@
             v-model="newMessage"
             @input="validateInput"
             @keydown.enter="handleEnterKey"
-            class="w-full max-h-[160px] border-none outline-none outline-offset-2 resize-none mr-1 pl-4 pr-2 mt-2 mb-2.5 py-0"
+            class="w-full max-h-[160px] border-none outline-none outline-offset-2 resize-none mr-1 pl-4 pr-2 mt-2 mb-2.5 py-0 text-black dark:text-white"
             placeholder="Type a messsage"
             rows="1"
           >
@@ -73,9 +76,10 @@
       <label
         v-if="imageFileData && imageFileData.length == 0"
         for="image_uploads"
-        class="px-3 py-2 ml-1 hover:bg-[#3b3b4126] rounded-2xl cursor-pointer"
+        class="py-2.5 px-2 ml-2 hover:bg-[#3b3b4126] rounded-2xl cursor-pointer"
       >
-        <i class="fa-solid fa-paperclip text-2xl"></i>
+        <!-- <i class="fa-solid fa-paperclip text-2xl"></i> -->
+        <img class="min-w-[26px]" src="@/assets/imgs/ic-link.svg" />
         <input
           class="hidden"
           id="image_uploads"
@@ -88,9 +92,9 @@
       </label>
       <button
         :class="{ 'pointer-events-none opacity-75': newMessage.trim() == '' }"
-        class="border-none outline-none py-1.5 px-1.5 ml-1 hover:bg-[#3b3b4126] rounded-2xl"
+        class="border-none outline-none py-2.5 px-2 ml-2 hover:bg-[#3b3b4126] rounded-2xl"
       >
-        <img class="min-w-8" src="@/assets/imgs/ic-send.svg" />
+        <img class="min-w-[26px]" src="@/assets/imgs/ic-send.svg" />
       </button>
     </div>
   </div>

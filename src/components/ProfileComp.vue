@@ -12,16 +12,19 @@
         class="absolute w-3 h-3 rounded-full right-[1px] bottom-0.5 border-2"
       ></div>
     </div>
-    <div class="w-full">
+    <div class="w-full text-black dark:text-white">
       <p class="text-sm font-semibold mb-0.5 last">{{ name }}</p>
       <p v-if="isUser" class="text-xs">{{ email }}</p>
       <p v-if="isOther" class="text-xs">
-        <span class="text-black">{{ chatStore.isUserOnline(id) ? 'online' : 'offline' }}</span>
+        <span>{{ chatStore.isUserOnline(id) ? 'online' : 'offline' }}</span>
       </p>
       <p
         v-if="isMessage"
-        :class="{ 'font-semibold': isReaded == false && chatStore.userId !== lastSenderId }"
-        class="text-xs last"
+        :class="{
+          'text-black dark:text-white font-semibold':
+            isReaded == false && chatStore.userId !== lastSenderId,
+        }"
+        class="text-xs text-[#747881] last"
       >
         {{ lastMessage }}
       </p>
@@ -38,10 +41,27 @@
       class="min-w-3 min-h-3 w-3 h-3 rounded-full bg-blue-600"
     ></div>
 
+    <div v-if="isOther">
+      <input
+        :checked="darkModeStore.isDark"
+        @click="darkModeStore.toggleDarkMode"
+        type="checkbox"
+        class="theme-checkbox hidden"
+        id="theme-toggle"
+      />
+      <label
+        for="theme-toggle"
+        class="theme-checkbox-label relative cursor-pointer rounded-full flex items-center justify-center gap-2"
+      >
+        <img src="@/assets/imgs/ic-light.svg" />
+        <img src="@/assets/imgs/ic-dark.svg" />
+      </label>
+    </div>
+
     <button
       v-if="!isDesktop && isOther"
       @click="chatStore.showMenu(true)"
-      class="border-none outline-none w-[26px] h-[26px] mr-2"
+      class="border-none outline-none mx-2"
     >
       <img src="@/assets/imgs/ic-menu.svg" />
     </button>
@@ -49,9 +69,11 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
 import ProfileImg from '@/assets/imgs/profile.png'
+import { useDarkModeStore } from '@/stores/darkMode'
 
 defineProps({
   image: String,
@@ -83,6 +105,11 @@ defineProps({
 
 const { isDesktop } = useDevice()
 const chatStore = useChatStore()
+const darkModeStore = useDarkModeStore()
+
+onMounted(() => {
+  darkModeStore.updateHtmlClass()
+})
 </script>
 
 <style lang="css" scoped>

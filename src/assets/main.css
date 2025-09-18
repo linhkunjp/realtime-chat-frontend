@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 
 * {
     font-family: "Montserrat", serif;
@@ -59,4 +60,36 @@ i.fa-regular {
 .overlay-modal {
     background: rgba(0, 0, 0, 0.4);
     transition: opacity 0.35s linear;
+}
+
+.theme-checkbox-label {
+    --toggle-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 30px;
+    background-color: #efefef;
+    transition: background-color 0.4s ease;
+}
+
+.theme-checkbox-label::before {
+    content: "";
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    background-color: #2a2a2a;
+    border-radius: 50%;
+    transition: left 0.4s ease, background-color 0.4s ease;
+}
+
+.theme-checkbox:checked+.theme-checkbox-label {
+    background-color: #2a2a2a;
+}
+
+.theme-checkbox:checked+.theme-checkbox-label::before {
+    left: 34px;
+    background-color: #efefef;
 }

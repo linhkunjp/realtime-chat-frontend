@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex">
+  <div class="h-screen flex bg-white dark:bg-[#17191C]">
     <LeftComp
       :class="[
         {
@@ -10,10 +10,9 @@
           'right-0': isMobile,
         },
       ]"
-      class="bg-[#fe9300]"
     />
 
-    <CenterComp class="bg-[#74be79] flex-1 border-l border-[#dfe5ef]" />
+    <CenterComp class="flex-1 border-l border-[#dfe5ef] dark:border-[#272A30]" />
 
     <!-- Overlay -->
     <div

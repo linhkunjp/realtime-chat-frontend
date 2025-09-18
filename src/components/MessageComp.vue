@@ -9,8 +9,8 @@
       <div
         :class="{
           'ml-auto': item.senderId == chatStore.userId,
-          'bg-amber-200': item.senderId == chatStore.userId && item.text !== '',
-          'bg-[pink]': item.senderId !== chatStore.userId && item.text !== '',
+          'bg-[#E0F0FF] dark:bg-[#001A3D]': item.senderId == chatStore.userId && item.text !== '',
+          'bg-[#E9EAED] dark:bg-[#1C1E22]': item.senderId !== chatStore.userId && item.text !== '',
         }"
         class="relative w-fit max-w-[80%] rounded-xl group/tooltip"
       >
@@ -53,7 +53,7 @@
           :class="{
             'mb-3': item.reactions && item.reactions.length > 0,
           }"
-          class="w-fit px-4 py-2 text-justify text-sm leading-5 flex items-center"
+          class="text-black dark:text-white w-fit px-4 py-2 text-justify text-sm leading-5 flex items-center"
         >
           {{ item.text }}
         </p>

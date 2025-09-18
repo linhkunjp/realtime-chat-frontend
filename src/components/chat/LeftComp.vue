@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full bg-white dark:bg-[#17191C] flex flex-col">
     <div class="flex items-center">
       <ProfileComp
         :name="authStore.username"
@@ -8,24 +8,19 @@
         :isUser="true"
         class="flex-1"
       />
-
-      <button
-        @click="handleLogout"
-        class="text-xl text-white mr-4 px-3 py-2 hover:bg-[#3b3b4126] rounded-full"
-      >
-        <i class="fa-solid fa-power-off"></i>
-      </button>
     </div>
 
     <!-- Search -->
-    <div class="border border-[#dfe5ef] rounded-lg h-[42px] flex items-center py-6 mt-4 mb-6 mx-6">
+    <div
+      class="border border-[#dfe5ef] dark:border-[#272A30] rounded-lg h-[42px] flex items-center py-6 mt-4 mb-6 mx-6"
+    >
       <input
         v-model="searchTerm"
-        class="outline-none border-none w-full h-[42px] pl-5"
+        class="outline-none border-none w-full h-[42px] pl-5 text-black dark:text-white"
         placeholder="Search by name"
       />
       <button class="border-none outline-none px-3 py-2">
-        <img class="w-[21px] h-[21px]" src="@/assets/imgs/ic-search.svg" />
+        <img src="@/assets/imgs/ic-search.svg" />
       </button>
     </div>
 
@@ -35,8 +30,8 @@
         v-for="(item, index) in filteredChats"
         :key="index"
         @click="getConversation(item.username, item.userId, item.image)"
-        :class="{ 'bg-[#ebf0ff]': chatStore.otherId == item.userId }"
-        class="hover:bg-[#f6f6f6] cursor-pointer"
+        :class="{ 'bg-[#DBDDE1] dark:bg-[#272A30]': chatStore.otherId == item.userId }"
+        class="hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22] cursor-pointer"
       >
         <ProfileComp
           :name="item.username"
@@ -48,6 +43,14 @@
           :isReaded="item.isReaded"
         />
       </div>
+    </div>
+
+    <div
+      class="text-black dark:text-white text-lg pr-6 mt-auto border-t border-[#dfe5ef] dark:border-[#272A30]"
+    >
+      <button @click="handleLogout" class="flex items-center gap-3 py-5 px-6 font-medium">
+        <img src="@/assets/imgs/ic-exit.svg" /> Đăng xuất
+      </button>
     </div>
 
     <Toast position="top-center" group="bc" class="messages">
