@@ -76,7 +76,7 @@
       <label
         v-if="imageFileData && imageFileData.length == 0"
         for="image_uploads"
-        class="py-2.5 px-2 ml-2 hover:bg-[#3b3b4126] rounded-2xl cursor-pointer"
+        class="py-2.5 px-2 ml-2 hover:opacity-65 cursor-pointer"
       >
         <!-- <i class="fa-solid fa-paperclip text-2xl"></i> -->
         <img class="min-w-[26px]" src="@/assets/imgs/ic-link.svg" />
@@ -91,8 +91,8 @@
         />
       </label>
       <button
-        :class="{ 'pointer-events-none opacity-75': newMessage.trim() == '' }"
-        class="border-none outline-none py-2.5 px-2 ml-2 hover:bg-[#3b3b4126] rounded-2xl"
+        :class="{ 'pointer-events-none opacity-55': newMessage.trim() == '' }"
+        class="border-none outline-none py-2.5 px-2 ml-2 hover:opacity-65"
       >
         <img class="min-w-[26px]" src="@/assets/imgs/ic-send.svg" />
       </button>

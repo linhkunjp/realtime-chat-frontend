@@ -4,17 +4,17 @@
       <img
         :src="image || ProfileImg"
         :class="isMessage ? 'h-[50px] min-w-[50px]' : ' h-[54px] min-w-[54px]'"
-        class="rounded-full"
+        class="rounded-full border border-[#dfe5ef]"
       />
       <div
         v-if="!isUser"
         :class="chatStore.isUserOnline(id) ? 'bg-[green]' : 'bg-[#d43434]'"
-        class="absolute w-3 h-3 rounded-full right-[1px] bottom-0.5 border-2"
+        class="absolute w-3 h-3 rounded-full right-[1px] bottom-0.5 border-2 border-white dark:border-[#17191C]"
       ></div>
     </div>
     <div class="w-full text-black dark:text-white">
       <p class="text-sm font-semibold mb-0.5 last">{{ name }}</p>
-      <p v-if="isUser" class="text-xs">{{ email }}</p>
+      <p v-if="isUser" class="text-xs last">{{ email }}</p>
       <p v-if="isOther" class="text-xs">
         <span>{{ chatStore.isUserOnline(id) ? 'online' : 'offline' }}</span>
       </p>
@@ -61,9 +61,9 @@
     <button
       v-if="!isDesktop && isOther"
       @click="chatStore.showMenu(true)"
-      class="border-none outline-none mx-2"
+      class="border-none outline-none py-2 px-2.5 bg-[#3b3b4126] rounded-sm hover:opacity-50"
     >
-      <img src="@/assets/imgs/ic-menu.svg" />
+      <img class="w-[26px] h-[22px]" src="@/assets/imgs/ic-menu.svg" />
     </button>
   </div>
 </template>
