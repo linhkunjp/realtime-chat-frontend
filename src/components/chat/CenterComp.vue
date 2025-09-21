@@ -13,10 +13,26 @@
     <!-- Content -->
     <div
       ref="heightMain"
-      class="h-full pt-6 px-6 overflow-y-auto overflow-x-hidden scrollbar bg-[#FAFAFA] dark:bg-black"
+      :class="{ 'flex items-center justify-center': chatStore.messages.length == 0 }"
+      class="h-full pt-6 pb-3 px-6 overflow-y-auto overflow-x-hidden scrollbar bg-[#FAFAFA] dark:bg-black"
     >
-      <template v-for="(item, index) in chatStore.messages" :key="item._id || item.tempId">
-        <MessageComp :item="item" :index="index" />
+      <template v-if="chatStore.messages.length > 0">
+        <template v-for="(item, index) in chatStore.messages" :key="item._id || item.tempId">
+          <MessageComp
+            :item="item"
+            :index="index"
+            :is-show-time="isShowTime === index"
+            @toggle="toggleShowTime(index)"
+          />
+        </template>
+      </template>
+      <template v-else>
+        <div class="flex flex-col items-center gap-6">
+          <img src="@/assets/imgs/ic-no-message.svg" />
+          <p class="text-[#747881] text-lg font-semibold">
+            Chưa có tin nhắn nào. Hãy bắt đầu cuộc hội thoại!
+          </p>
+        </div>
       </template>
     </div>
 
@@ -67,7 +83,7 @@
             @input="validateInput"
             @keydown.enter="handleEnterKey"
             class="w-full max-h-[160px] border-none outline-none outline-offset-2 resize-none mr-1 pl-4 pr-2 mt-2 mb-2.5 py-0 text-black dark:text-white"
-            placeholder="Type a messsage"
+            placeholder="Nhập tin nhắn"
             rows="1"
           >
           </textarea>
@@ -124,6 +140,12 @@ const textarea = ref<HTMLDivElement | null>(null)
 const inputContainer = ref<HTMLDivElement | null>(null)
 
 const imageFileData = ref<ImageFileData[]>([])
+
+const isShowTime = ref(-1)
+
+const toggleShowTime = (index: number) => {
+  isShowTime.value = isShowTime.value === index ? -1 : index
+}
 
 // Chọn ảnh upload
 const handleChange = (event: Event) => {

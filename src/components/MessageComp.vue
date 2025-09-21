@@ -12,7 +12,7 @@
           'bg-[#E0F0FF] dark:bg-[#001A3D]': item.senderId == chatStore.userId && item.text !== '',
           'bg-[#E9EAED] dark:bg-[#1C1E22]': item.senderId !== chatStore.userId && item.text !== '',
         }"
-        class="relative w-fit max-w-[80%] rounded-2xl group/tooltip"
+        class="relative w-fit max-w-[80%] rounded-2xl"
       >
         <div
           v-if="item.images && item.images.length > 0"
@@ -56,26 +56,15 @@
 
         <p
           v-if="item.text !== ''"
+          @click="$emit('toggle')"
           :class="{
             'mb-3': item.reactions && item.reactions.length > 0,
           }"
-          class="text-black dark:text-white w-fit px-4 py-2 text-justify text-sm leading-5 flex items-center"
+          class="text-black dark:text-white w-fit px-4 py-2 text-sm leading-5"
         >
           {{ item.text }}
         </p>
 
-        <!-- Tooltip -->
-        <span
-          :class="[
-            item.senderId !== chatStore.userId ? 'left-1/2' : 'right-1/2',
-            {
-              '!top-[-20px] !left-[130px]': index == 0,
-            },
-          ]"
-          class="absolute z-1 top-full mt-1 opacity-0 group-hover/tooltip:opacity-100 transition bg-[#eae8e8] text-black text-xs px-2.5 py-2 rounded-xl whitespace-nowrap pointer-events-none"
-        >
-          {{ formatDate(item.createdAt) }}
-        </span>
         <div
           v-if="item.reactions && item.reactions.length > 0"
           class="absolute bottom-[-10px] right-1"
@@ -98,12 +87,12 @@
               ' hidden group-hover:flex': isDesktop,
             },
           ]"
-          class="absolute top-0 bottom-0 flex items-center rounded-full hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22]"
+          class="absolute top-0 bottom-0 flex items-center"
         >
           <div
             ref="reactionButton"
             @click="toggleReaction"
-            class="relative rounded-full items-center group/icon p-2.5 cursor-pointer"
+            class="relative items-center group/icon p-2.5 rounded-full hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22] cursor-pointer"
           >
             <img src="@/assets/imgs/ic-smile.svg" />
 
@@ -116,8 +105,8 @@
               class="absolute left-1/2 -translate-x-1/2 hidden group-hover/icon:flex justify-center bg-white dark:bg-[#17191C] shadow-lg rounded-3xl px-3.5 py-2.5 gap-3 w-max z-9 cursor-default reaction"
             >
               <button
-                v-for="(i, index) in reactions"
-                :key="index"
+                v-for="(i, indexReaction) in reactions"
+                :key="indexReaction"
                 @click="handleReaction(item, i.type)"
               >
                 <img
@@ -136,7 +125,15 @@
       </div>
 
       <p
-        v-if="index === chatStore.messages.length - 1 || index == isShowTime"
+        v-if="isShowTime"
+        :class="[item.senderId == chatStore.userId ? 'ml-auto mr-1' : 'ml-1']"
+        class="mt-2 w-fit max-w-[80%] text-black dark:text-white text-xs whitespace-nowrap pointer-events-none"
+      >
+        {{ formatDate(item.createdAt) }}
+      </p>
+
+      <p
+        v-if="index === chatStore.messages.length - 1"
         :class="item.senderId == chatStore.userId ? 'ml-auto mr-1' : 'ml-1'"
         class="w-fit rounded-xl text-justify max-w-[80%] text-xs leading-5 text-black dark:text-white"
       >
@@ -161,10 +158,16 @@ import icWow from '@/assets/imgs/ic-wow.svg'
 import icAngry from '@/assets/imgs/ic-angry.svg'
 
 import type { MessageData } from '@/types/message'
+import { formatDate } from '@/utils/methods'
 
-const { item, index } = defineProps<{
+const { item, index, isShowTime } = defineProps<{
   item: MessageData
   index: number
+  isShowTime: boolean
+}>()
+
+defineEmits<{
+  (e: 'toggle'): void
 }>()
 
 const { isDesktop } = useDevice()
@@ -172,7 +175,6 @@ const chatStore = useChatStore()
 const lightboxVisible = ref(false)
 const lightboxImages = ref<string[]>([])
 const lightboxIndex = ref(0)
-const isShowTime = ref(-1)
 const isLoadImg = ref(true)
 
 const isShowReaction = ref(false)
@@ -219,35 +221,6 @@ const closeReactionOnClickOutside = (event: Event) => {
     !reactionButton.value.contains(event.target as Node)
   ) {
     isShowReaction.value = false
-  }
-}
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-
-  const isSameDay =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-
-  if (isSameDay) {
-    // Chỉ hiện giờ phút
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    })
-  } else {
-    // Hiện ngày + giờ
-    return date.toLocaleString([], {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    })
   }
 }
 

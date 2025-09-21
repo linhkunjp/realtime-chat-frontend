@@ -17,7 +17,7 @@
       <input
         v-model="searchTerm"
         class="outline-none border-none w-full h-[42px] pl-5 text-black dark:text-white"
-        placeholder="Search by name"
+        placeholder="Tìm kiếm theo tên"
       />
       <button class="border-none outline-none px-3 py-2">
         <img src="@/assets/imgs/ic-search.svg" />
@@ -36,6 +36,7 @@
         <ProfileComp
           :name="item.username"
           :lastMessage="item.lastMessage"
+          :lastMessageTime="item.lastMessageTime"
           :lastSenderId="item.lastSenderId"
           :image="item.image"
           :isMessage="true"
@@ -69,8 +70,6 @@
             <span class="font-bold">{{ slotProps.message.summary }}</span>
           </div>
           <div class="font-regular text-sm ml-2">{{ slotProps.message.detail }}</div>
-          <!-- <p class="font-bold">{{ slotProps.message.image }}</p>
-          <p class="font-bold">{{ slotProps.message.senderId }}</p> -->
         </div>
       </template>
     </Toast>
@@ -150,6 +149,8 @@ watch(
 
     // Nếu tin nhắn cuối chưa đọc và không phải do mình gửi thì show toast
     if (latestChat && !latestChat.isReaded && latestChat.lastSenderId !== chatStore.userId) {
+      toast.remove({ id: latestChat.userId } as CustomToastMessage)
+
       toast.add({
         severity: 'secondary',
         summary: `${latestChat.username}`,

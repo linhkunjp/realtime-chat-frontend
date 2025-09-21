@@ -26,20 +26,33 @@
         }"
         class="text-xs text-[#747881] last"
       >
-        {{ lastMessage }}
+        {{ lastMessage || `Hãy bắt đầu cuộc hội thoại với ${name}` }}
       </p>
     </div>
-    <div
-      v-if="chatStore.getUnreadCount(id) > 1"
-      class="whitespace-nowrap text-xs bg-[#aaa8a8] rounded-lg px-1"
-    >
-      {{ `${chatStore.getUnreadCount(id)}+` }}
-    </div>
 
-    <div
-      v-if="chatStore.getUnreadCount(id) == 1"
-      class="min-w-3 min-h-3 w-3 h-3 rounded-full bg-blue-600"
-    ></div>
+    <div class="flex flex-col items-end gap-1.5">
+      <p
+        v-if="chatStore.getUnreadCount(id) > 1"
+        class="whitespace-nowrap text-xs text-white font-semibold bg-[#FF3742] rounded-[999px] px-2 py-0.5 w-fit"
+      >
+        {{ `${chatStore.getUnreadCount(id)}` }}
+      </p>
+
+      <div
+        v-if="chatStore.getUnreadCount(id) == 1"
+        class="min-w-3 min-h-3 w-3 h-3 rounded-full bg-blue-600"
+      ></div>
+
+      <p
+        :class="{
+          'text-black dark:text-white font-semibold':
+            isReaded == false && chatStore.userId !== lastSenderId,
+        }"
+        class="text-[#747881] text-xs whitespace-nowrap"
+      >
+        {{ formatDate(lastMessageTime, true) }}
+      </p>
+    </div>
 
     <div v-if="isOther">
       <input
@@ -72,8 +85,10 @@
 import { onMounted } from 'vue'
 import { useDevice } from '@/utils/deviceMixin'
 import { useChatStore } from '@/stores/chatStore'
-import ProfileImg from '@/assets/imgs/profile.png'
 import { useDarkModeStore } from '@/stores/darkMode'
+import { formatDate } from '@/utils/methods'
+
+import ProfileImg from '@/assets/imgs/profile.png'
 
 defineProps({
   image: String,
@@ -84,6 +99,10 @@ defineProps({
     default: '',
   },
   lastMessage: String,
+  lastMessageTime: {
+    type: String,
+    default: '',
+  },
   lastSenderId: String,
   isUser: {
     type: Boolean,
