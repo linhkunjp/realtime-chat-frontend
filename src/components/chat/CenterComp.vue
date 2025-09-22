@@ -119,8 +119,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
-import ProfileComp from '../ProfileComp.vue'
+import { useToast } from 'primevue'
 
+import ProfileComp from '../ProfileComp.vue'
 import ChatService from '@/services/ChatService'
 import MessageComp from '../MessageComp.vue'
 
@@ -138,6 +139,7 @@ const newMessage = ref('')
 const heightMain = ref<HTMLDivElement | null>(null)
 const textarea = ref<HTMLDivElement | null>(null)
 const inputContainer = ref<HTMLDivElement | null>(null)
+const toast = useToast()
 
 const imageFileData = ref<ImageFileData[]>([])
 
@@ -153,6 +155,17 @@ const handleChange = (event: Event) => {
   if (!target.files) return
 
   const files = Array.from(target.files)
+
+  const total = imageFileData.value.length + files.length
+  if (total > 3) {
+    toast.add({
+      severity: 'error',
+      summary: 'Chỉ được chọn tối đa 3 ảnh',
+      group: 'tl',
+      life: 300000,
+    })
+    return
+  }
 
   files.forEach((file) => {
     // Tạo FileReader để đọc file và chuyển thành base64 dùng cho preview
