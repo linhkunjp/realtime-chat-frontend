@@ -12,16 +12,16 @@
 
     <!-- Search -->
     <div
-      class="border border-[#dfe5ef] dark:border-[#272A30] rounded-lg h-[42px] flex items-center py-6 mt-4 mb-6 mx-6"
+      class="border border-[#dfe5ef] dark:border-[#272A30] rounded-2xl h-[36px] flex items-center py-6 mt-4 mb-6 mx-6"
     >
-      <input
-        v-model="searchTerm"
-        class="outline-none border-none w-full h-[42px] pl-5 text-black dark:text-white"
-        placeholder="Tìm kiếm theo tên"
-      />
       <button class="border-none outline-none px-3 py-2">
         <img src="@/assets/imgs/ic-search.svg" />
       </button>
+      <input
+        v-model="searchTerm"
+        class="outline-none border-none w-full h-[42px] pr-5 text-black dark:text-white"
+        placeholder="Tìm kiếm theo tên"
+      />
     </div>
 
     <!-- List user -->

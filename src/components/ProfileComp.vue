@@ -4,7 +4,7 @@
       <img
         :src="image || ProfileImg"
         :class="isMessage ? 'h-[50px] min-w-[50px]' : ' h-[54px] min-w-[54px]'"
-        class="rounded-full border border-[#dfe5ef]"
+        class="rounded-full border border-[#dfe5ef] dark:border-[#272A30]"
       />
       <div
         v-if="!isUser"

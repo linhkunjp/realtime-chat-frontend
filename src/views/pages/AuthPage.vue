@@ -10,7 +10,7 @@
       class="w-full 2xl:max-w-1/3 xl:max-w-5/12 lg:max-w-1/2 sm:flex items-center justify-center mx-6"
     >
       <div>
-        <p class="text-2xl font-bold mb-5 sm:mr-[80px] text-black">Welcome to Realtime Chat</p>
+        <p class="text-2xl font-bold mb-7 sm:mr-[80px] text-black">Realtime Chat, xin chào!</p>
         <!-- Form -->
         <SignIn v-if="authStore.component == 'login'" />
         <SignUp v-if="authStore.component == 'register'" />
