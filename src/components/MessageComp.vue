@@ -3,7 +3,7 @@
     <img
       v-if="item.senderId !== chatStore.userId"
       :src="chatStore.image || ProfileImg"
-      class="rounded-full w-[50px] h-[50px]"
+      class="rounded-full border border-[#dfe5ef] dark:border-[#272A30] w-[50px] h-[50px]"
     />
     <div class="w-full wrap-anywhere mt-1 group">
       <div
@@ -16,11 +16,14 @@
       >
         <div
           v-if="item.images && item.images.length > 0"
-          class="mt-2 grid gap-2 bg-transparent"
+          class="mt-2 gap-2 bg-transparent"
           :class="{
+            grid: !isMobile,
+            'flex flex-wrap': isMobile,
             'grid-cols-1': item.images.length === 1,
             'grid-cols-2': item.images.length === 2,
             'grid-cols-3': item.images.length >= 3,
+            'justify-end': item.senderId == chatStore.userId,
             'mb-3': item.reactions && item.reactions.length > 0,
           }"
         >
@@ -34,7 +37,7 @@
               :src="img"
               @load="handleLoadImg"
               @click="openLightbox(item.images, idx)"
-              class="rounded-lg w-full h-48 object-cover cursor-pointer"
+              class="rounded-lg border border-[#dfe5ef] dark:border-[#272A30] w-full h-48 object-cover cursor-pointer"
             />
 
             <div
@@ -84,7 +87,7 @@
           :class="[
             item.senderId == chatStore.userId ? 'left-[-40px]' : 'right-[-40px]',
             {
-              ' hidden group-hover:flex': isDesktop,
+              'hidden group-hover:flex': isDesktop,
             },
           ]"
           class="absolute top-0 bottom-0 flex items-center"
@@ -92,17 +95,21 @@
           <div
             ref="reactionButton"
             @click="toggleReaction"
-            class="relative items-center group/icon p-2.5 rounded-full hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22] cursor-pointer"
+            :class="{ 'bg-[#E9EAED] dark:bg-[#1C1E22]': isShowReaction }"
+            class="relative items-center group/icon p-2.5 rounded-full hover:bg-[#E9EAED] hover:dark:bg-[#1C1E22] cursor-pointer"
           >
             <img src="@/assets/imgs/ic-smile.svg" />
 
             <div
               ref="reactionBox"
               :class="[
-                index == 0 ? 'top-[42px] after:top-[-15px]' : 'top-[-60px] after:bottom-[-14px]',
+                index == 0 ? 'top-[42px]' : isMobile ? 'top-[-48px]' : 'top-[-60px]',
                 { '!flex': isShowReaction },
+                isMobile
+                  ? 'right-[-36px] -translate-x-0 px-2.5 py-1.5 gap-2'
+                  : 'left-1/2 -translate-x-1/2 px-3.5 py-2.5 gap-3',
               ]"
-              class="absolute left-1/2 -translate-x-1/2 hidden group-hover/icon:flex justify-center bg-white dark:bg-[#17191C] shadow-lg rounded-3xl px-3.5 py-2.5 gap-3 w-max z-9 cursor-default reaction"
+              class="absolute hidden group-hover/icon:flex justify-center bg-white dark:bg-[#17191C] shadow-lg rounded-3xl w-max z-9 cursor-default"
             >
               <button
                 v-for="(i, indexReaction) in reactions"
@@ -111,14 +118,21 @@
               >
                 <img
                   :src="i.icon"
-                  class="w-[34px] min-w-[34px] transition-transform duration-150 ease-in-out hover:scale-125"
+                  :class="[isMobile ? 'w-[30px] min-w-[30px]' : 'w-[34px] min-w-[34px]']"
+                  class="transition-transform duration-150 ease-in-out hover:scale-125"
                 />
               </button>
-
-              <div
-                :class="index == 0 ? 'top-[-4px]' : '-bottom-1'"
-                class="absolute left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-white dark:bg-[#17191C] cursor-default"
-              ></div>
+            </div>
+            <div
+              :class="[
+                index == 0 ? '-bottom-3' : '-top-3',
+                {
+                  '!flex': isShowReaction,
+                },
+              ]"
+              class="absolute hidden group-hover/icon:flex left-1/2 -translate-x-1/2 cursor-default reaction after:left-1/2 after:-translate-x-1/2"
+            >
+              <div class="w-2.5 h-2.5 rotate-45 bg-white dark:bg-[#17191C]"></div>
             </div>
           </div>
         </div>
@@ -170,7 +184,7 @@ defineEmits<{
   (e: 'toggle'): void
 }>()
 
-const { isDesktop } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 const chatStore = useChatStore()
 const lightboxVisible = ref(false)
 const lightboxImages = ref<string[]>([])
@@ -241,5 +255,6 @@ onBeforeUnmount(() => {
   height: 16px;
   background-color: transparent;
   position: absolute;
+  top: 0;
 }
 </style>

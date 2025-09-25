@@ -16,6 +16,7 @@ export const useChatStore = defineStore(
             listChats: [] as ListChatData[],
             messagesCache: new Map<string, MessageData[]>(),
             onlineUsers: [] as string[],
+            isPending: true
         }),
 
         actions: {
@@ -34,6 +35,7 @@ export const useChatStore = defineStore(
             async getChatList() {
                 const response = await ChatService.getChatList(this.userId)
                 if (response && response.isSuccess == true) {
+                    this.isPending = false
                     this.listChats = response.results.map((chat: ListChatData) => {
                         const isMine = chat.lastSenderId === this.userId;
                         let lastMsg = "";

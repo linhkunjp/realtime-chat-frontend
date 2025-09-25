@@ -2,7 +2,9 @@
   <div class="h-ful flex flex-col">
     <!-- Header -->
     <div class="border-b border-[#dfe5ef] dark:border-[#272A30]">
+      <SkeletonComp v-if="chatStore.isPending" :isOther="true" />
       <ProfileComp
+        v-else
         :name="userName"
         :isOther="true"
         :image="chatStore.image"
@@ -27,17 +29,31 @@
         </template>
       </template>
       <template v-else>
-        <div class="flex flex-col items-center gap-6">
-          <img src="@/assets/imgs/ic-no-message.svg" />
-          <p class="text-[#747881] text-lg font-semibold">
-            Chưa có tin nhắn nào. Hãy bắt đầu cuộc hội thoại!
+        <div class="flex flex-col items-center gap-8">
+          <div class="relative">
+            <img src="@/assets/imgs/ic-no-message.svg" />
+            <div class="absolute left-4 top-8">
+              <div
+                v-for="n in 3"
+                :key="n"
+                :class="{ '!animate-none': !chatStore.isPending }"
+                class="chat-loading-dot w-3 h-3 m-0.5 rounded-full bg-[#FAFAFA] dark:bg-black inline-block"
+              ></div>
+            </div>
+          </div>
+          <p class="text-[#747881] text-xl font-semibold">
+            {{
+              chatStore.isPending
+                ? 'Đang tải dữ liệu, vui lòng chờ trong giây lát!'
+                : 'Chưa có tin nhắn nào. Hãy bắt đầu cuộc hội thoại!'
+            }}
           </p>
         </div>
       </template>
     </div>
 
     <!-- Footer -->
-    <div class="mx-6 my-3 flex items-end">
+    <div v-if="!chatStore.isPending" class="mx-6 my-3 flex items-end">
       <div
         ref="inputContainer"
         class="border border-[#dfe5ef] dark:border-[#272A30] rounded-2xl flex items-center w-full flex-col"
@@ -124,6 +140,7 @@ import { useToast } from 'primevue'
 import ProfileComp from '../ProfileComp.vue'
 import ChatService from '@/services/ChatService'
 import MessageComp from '../MessageComp.vue'
+import SkeletonComp from '../SkeletonComp.vue'
 
 interface ImageFileData {
   name: string
@@ -162,7 +179,7 @@ const handleChange = (event: Event) => {
       severity: 'error',
       summary: 'Chỉ được chọn tối đa 3 ảnh',
       group: 'tl',
-      life: 300000,
+      life: 3000,
     })
     return
   }

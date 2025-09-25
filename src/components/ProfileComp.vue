@@ -30,6 +30,10 @@
       </p>
     </div>
 
+    <button v-if="!isDesktop && isUser" @click="chatStore.showMenu(false)" class="hover:opacity-50">
+      <img src="@/assets/imgs/ic-close-2.svg" />
+    </button>
+
     <div class="flex flex-col items-end gap-1.5">
       <p
         v-if="chatStore.getUnreadCount(id) > 1"
@@ -74,9 +78,9 @@
     <button
       v-if="!isDesktop && isOther"
       @click="chatStore.showMenu(true)"
-      class="border-none outline-none py-2 px-2.5 bg-[#3b3b4126] rounded-sm hover:opacity-50"
+      class="border-none outline-none py-2 px-2.5 rounded-sm hover:opacity-50"
     >
-      <img class="w-[26px] h-[22px]" src="@/assets/imgs/ic-menu.svg" />
+      <img class="w-[26px] min-w-5 h-[22px]" src="@/assets/imgs/ic-menu.svg" />
     </button>
   </div>
 </template>

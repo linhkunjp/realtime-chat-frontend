@@ -18,7 +18,6 @@ const authStore = useAuthStore()
 
 <style>
 .auth .p-toast-message {
-  min-width: 500px;
   min-height: 40px;
 }
 
@@ -29,6 +28,7 @@ const authStore = useAuthStore()
 
 .auth .p-toast-summary {
   margin-left: 10px !important;
+  margin-right: 10px !important;
   font-size: 18px !important;
 }
 
@@ -39,5 +39,24 @@ const authStore = useAuthStore()
 
 .messages .p-toast-message-secondary {
   background: #27272aab;
+}
+
+.messages .p-toast-message-content {
+  align-items: center !important;
+  padding-right: 20px;
+}
+
+.p-toast.auth {
+  max-width: 100% !important;
+  width: max-content !important;
+}
+
+.p-toast.messages {
+  max-width: 100% !important;
+  min-width: max-content !important;
+}
+
+.p-toast-message {
+  margin: 0 20px 20px !important;
 }
 </style>

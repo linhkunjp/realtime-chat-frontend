@@ -44,6 +44,15 @@
           :isReaded="item.isReaded"
         />
       </div>
+
+      <SkeletonComp
+        v-if="chatStore.isPending"
+        class="hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22] cursor-pointer"
+      />
+      <SkeletonComp
+        v-if="chatStore.isPending"
+        class="hover:bg-[#E9EAED] dark:hover:bg-[#1C1E22] cursor-pointer"
+      />
     </div>
 
     <div
@@ -69,7 +78,11 @@
           <div class="flex items-center gap-2 ml-2">
             <span class="font-bold">{{ slotProps.message.summary }}</span>
           </div>
-          <div class="font-regular text-sm ml-2">{{ slotProps.message.detail }}</div>
+          <div
+            class="font-regular text-sm ml-2 max-w-[280px] overflow-hidden whitespace-nowrap overflow-ellipsis"
+          >
+            {{ slotProps.message.detail }}
+          </div>
         </div>
       </template>
     </Toast>
@@ -86,6 +99,7 @@ import { useModalStore } from '@/stores/modal'
 import { useToast } from 'primevue'
 import Toast from 'primevue/toast'
 import ProfileComp from '../ProfileComp.vue'
+import SkeletonComp from '../SkeletonComp.vue'
 import type { ToastMessageOptions } from 'primevue/toast'
 
 interface CustomToastMessage extends ToastMessageOptions {
@@ -159,7 +173,7 @@ watch(
         senderId: `${latestChat.userId}`,
         id: latestChat.userId,
         group: 'bc',
-        life: 600000,
+        life: 5000,
       } as CustomToastMessage)
     }
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex bg-white dark:bg-[#17191C]">
+  <div class="h-screen max-h-dvh flex bg-white dark:bg-[#17191C]">
     <LeftComp
       :class="[
         {
