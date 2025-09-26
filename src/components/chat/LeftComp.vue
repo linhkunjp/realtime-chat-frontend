@@ -76,7 +76,10 @@
           class="flex flex-col items-start flex-auto cursor-pointer"
         >
           <div class="flex items-center gap-2 ml-2">
-            <span class="font-bold">{{ slotProps.message.summary }}</span>
+            <span
+              class="font-bold max-w-[280px] overflow-hidden whitespace-nowrap overflow-ellipsis"
+              >{{ slotProps.message.summary }}</span
+            >
           </div>
           <div
             class="font-regular text-sm ml-2 max-w-[280px] overflow-hidden whitespace-nowrap overflow-ellipsis"

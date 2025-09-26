@@ -6,7 +6,7 @@ export const SignUpSchema = yup.object().shape({
         .required("Tên không được để trống")
         .matches(/^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s\u4e00-\u9fa5\u3040-\u30ff]+$/u, "Chỉ cho phép nhập ký tự chữ cái")
         .min(4, 'Tên phải có ít nhất 4 kí tự')
-        .max(64, 'Tên không được quá 64 ký tự'),
+        .max(26, 'Tên không được quá 26 ký tự'),
     email: yup.string()
         .required('Email không được để trống')
         .test('valid-email', 'Email không hợp lệ. Vui lòng nhập đúng định dạng email', (value) => {

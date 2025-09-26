@@ -51,7 +51,6 @@ const { getToken } = useAuth()
 const formData = reactive({
   email: '',
   password: '',
-  username: '',
 })
 
 const handleAuth = () => {
@@ -75,7 +74,7 @@ const handleSubmit = async () => {
       const token = await getToken.value()
       localStorage.setItem('user_id', user.value?.id ?? '')
       localStorage.setItem('email', user.value?.emailAddresses[0]?.emailAddress ?? '')
-      localStorage.setItem('username', user.value?.username ?? '')
+      localStorage.setItem('username', user.value?.fullName ?? '')
       localStorage.setItem('image', user.value?.imageUrl ?? '')
       localStorage.setItem('token', token ?? '')
 

@@ -68,7 +68,7 @@ const handleSubmit = async () => {
   authStore.isLoading = true
   try {
     const results = await signUp.value?.create({
-      username: formData.username,
+      firstName: formData.username,
       emailAddress: formData.email,
       password: formData.password,
     })
@@ -78,7 +78,7 @@ const handleSubmit = async () => {
       const userData = {
         userId: user.value?.id ?? '',
         email: user.value?.emailAddresses[0]?.emailAddress ?? '',
-        username: user.value?.username ?? '',
+        username: user.value?.fullName ?? '',
         image: user.value?.imageUrl ?? '',
       }
       const response = await authStore.handleAuth(userData, token ?? '')
